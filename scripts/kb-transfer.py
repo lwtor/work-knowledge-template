@@ -24,6 +24,7 @@ from datetime import datetime, timezone
 
 FORMAT_VERSION = 1
 DATA_ROOTS = ("Knowledge", "Projects", "Daily", "Inbox", "Attachments")
+PLACEHOLDER_FILES = {f"{name}/README.md" for name in DATA_ROOTS}
 STATE_DIR = ".kb-transfer"
 STATE_FILE = "manifest.json"
 
@@ -64,6 +65,8 @@ def data_files(root: Path) -> dict[str, dict[str, int | str]]:
             if not path.is_file() or path.is_symlink():
                 continue
             relative = rel_key(path, root)
+            if relative in PLACEHOLDER_FILES:
+                continue
             digest = hashlib.sha256(path.read_bytes()).hexdigest()
             result[relative] = {"sha256": digest, "size": path.stat().st_size}
     return dict(sorted(result.items()))
@@ -112,8 +115,9 @@ def add_bytes(archive: tarfile.TarFile, name: str, content: bytes) -> None:
     archive.addfile(info, io.BytesIO(content))
 
 
-def run_age_encrypt(age: str, output: Path, root: Path, changed: list[str], metadata: dict, manifest: dict, deleted: list[str]) -> None:
-    process = subprocess.Popen([age, "-p", "-o", str(output)], stdin=subprocess.PIPE)
+def run_age_encrypt(age: str, output: Path, root: Path, changed: list[str], metadata: dict, manifest: dict, deleted: list[str], recipient_file: str | None) -> None:
+    command = [age, "-R", recipient_file, "-o", str(output)] if recipient_file else [age, "-p", "-o", str(output)]
+    process = subprocess.Popen(command, stdin=subprocess.PIPE)
     assert process.stdin is not None
     try:
         with tarfile.open(fileobj=process.stdin, mode="w|gz") as archive:
@@ -133,10 +137,11 @@ def run_age_encrypt(age: str, output: Path, root: Path, changed: list[str], meta
         fail("age 加密失败，未生成有效传输包。")
 
 
-def read_decrypted_package(age: str, package: Path) -> tuple[dict, dict, list[str]]:
+def read_decrypted_package(age: str, package: Path, identity_file: str | None) -> tuple[dict, dict, list[str]]:
     if not package.is_file():
         fail(f"传输包不存在：{package}")
-    process = subprocess.Popen([age, "-d", str(package)], stdout=subprocess.PIPE)
+    command = [age, "-d", "-i", identity_file, str(package)] if identity_file else [age, "-d", str(package)]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
     assert process.stdout is not None
     metadata: dict | None = None
     manifest: dict | None = None
@@ -182,8 +187,9 @@ def check_package_conflict(root: Path, metadata: dict) -> None:
         )
 
 
-def apply_package(age: str, package: Path, root: Path, manifest: dict, deleted: list[str]) -> None:
-    process = subprocess.Popen([age, "-d", str(package)], stdout=subprocess.PIPE)
+def apply_package(age: str, package: Path, root: Path, manifest: dict, deleted: list[str], identity_file: str | None) -> None:
+    command = [age, "-d", "-i", identity_file, str(package)] if identity_file else [age, "-d", str(package)]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
     assert process.stdout is not None
     try:
         with tarfile.open(fileobj=process.stdout, mode="r|gz") as archive:
@@ -247,7 +253,7 @@ def command_export(args: argparse.Namespace) -> None:
         "changed_files": len(changed),
         "deleted_files": len(deleted),
     }
-    run_age_encrypt(age, output, root, changed, metadata, current, deleted)
+    run_age_encrypt(age, output, root, changed, metadata, current, deleted, args.recipient_file)
     write_state(root, current)
     print(json.dumps({
         "package": str(output),
@@ -262,9 +268,9 @@ def command_import(args: argparse.Namespace) -> None:
     root = vault_root(args.vault)
     age = age_path()
     package = Path(args.package).expanduser().resolve()
-    metadata, manifest, deleted = read_decrypted_package(age, package)
+    metadata, manifest, deleted = read_decrypted_package(age, package, args.identity_file)
     check_package_conflict(root, metadata)
-    apply_package(age, package, root, manifest, deleted)
+    apply_package(age, package, root, manifest, deleted, args.identity_file)
     print(json.dumps({
         "vault": str(root),
         "imported": True,
@@ -284,10 +290,12 @@ def parser() -> argparse.ArgumentParser:
     export = sub.add_parser("export", help="生成加密增量传输包")
     export.add_argument("--vault", default=argparse.SUPPRESS, help="知识库路径")
     export.add_argument("--out", required=True, help="输出 .age 文件路径")
+    export.add_argument("--recipient-file", help="可选：age 公钥文件；提供后不询问密码")
     export.set_defaults(handler=command_export)
     importing = sub.add_parser("import", help="导入加密增量传输包")
     importing.add_argument("--vault", default=argparse.SUPPRESS, help="知识库路径")
     importing.add_argument("--package", required=True, help=".age 传输包路径")
+    importing.add_argument("--identity-file", help="可选：age 私钥文件；提供后不询问密码")
     importing.set_defaults(handler=command_import)
     return command
 
