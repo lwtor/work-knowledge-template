@@ -41,6 +41,11 @@ if [[ ! -d "$root/.git" ]]; then
   exit 1
 fi
 
+[[ -f "$root/.kb-role" && "$(tr -d '[:space:]' < "$root/.kb-role")" == "personal" ]] || {
+  echo "错误：当前目录不是个人知识库仓库，拒绝执行框架更新。" >&2
+  exit 1
+}
+
 if [[ -n "$(git -C "$root" status --porcelain)" ]]; then
   echo "错误：当前知识库有未提交修改。请先提交或保存后再更新框架。" >&2
   exit 1
@@ -70,6 +75,11 @@ required=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "skills" 
 for path in "${required[@]}"; do
   [[ -e "$source_dir/$path" ]] || { echo "错误：模板缺少 $path。" >&2; exit 1; }
 done
+
+[[ -f "$source_dir/.kb-role" && "$(tr -d '[:space:]' < "$source_dir/.kb-role")" == "template" ]] || {
+  echo "错误：来源不是模板仓库，拒绝更新。" >&2
+  exit 1
+}
 
 backup_dir="$root/.kb-backups/framework-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$backup_dir"
