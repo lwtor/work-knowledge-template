@@ -13,3 +13,4 @@
 
 # 框架更新前的本地备份
 .kb-backups/
+.kb-transfer/
