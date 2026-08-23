@@ -45,10 +45,15 @@ else
   rm -rf "$target_dir/.git"
 fi
 
+if [[ -f "$target_dir/.kb-role" ]]; then
+  printf 'personal\n' > "$target_dir/.kb-role"
+fi
+
 cat <<EOF
 知识库模板初始化完成。
 
 本地路径：$target_dir
+仓库角色：personal
 
 下一步：
 1. 用 Obsidian 打开这个目录；
