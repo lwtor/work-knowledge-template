@@ -31,7 +31,11 @@
 
 把模板 URL 和下面这句话发给具备 GitHub 与本地文件权限的 Agent：
 
-> 请读取 https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md，并严格按照其中协议为我创建或接入个人工作知识库。除协议明确列出的登录授权或冲突外，不要让我手工操作。
+> 请读取 https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md，并严格按照其中协议为我创建或接入个人工作知识库。
+>
+> 本地保存路径：[可选：复制后请替换为实际路径；如果保留此占位文字不修改，请先询问我一次]
+>
+> 除协议明确列出的登录授权、路径询问或冲突外，不要让我手工操作。
 
 完整流程见 AI/一键初始化.md。个人独立仓库默认通过模板生成并设为私有；只有明确要求保留上游关系时才真正 fork。
 
