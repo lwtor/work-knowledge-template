@@ -13,12 +13,16 @@ mkdir -p "$dir"
 cat > "$dir/SKILL.md" <<EOF
 ---
 name: work-knowledge
-description: Use the user's persistent personal work knowledge base when asked to record, remember, save, summarize, organize, retrieve, search, or update work knowledge, including “总结到知识库”, “记录到知识库”, “记住这个”, or “知识库里有没有”.
+description: Use the user's existing personal work knowledge base when asked to record, remember, save, summarize, organize, retrieve, search, or update work knowledge. Do not use its stored path for bootstrap, create, initialize, install, clone, or connect requests; those must follow BOOTSTRAP.md and the current request.
 ---
 
 # Personal Work Knowledge Base
 
-The canonical root is \`$kb_path\`. Use it without asking for the path again. Read \`AGENTS.md\`, \`AI/启动配置.md\`, \`AI/AI-GUIDE.md\`, \`AI/LOCAL.md\`, and the relevant repository skill before operating. Use only conversation content visible in the current task and follow all repository safety and confirmation rules. Never upload or delete without separate authorization.
+The canonical root for ordinary use of the existing knowledge base is \`$kb_path\`.
+
+Bootstrap boundary: if the current request references \`BOOTSTRAP.md\` or asks to create, initialize, install, clone, or connect a knowledge base, do not use, reveal, or infer a local path from this skill. Stop applying this skill and follow \`BOOTSTRAP.md\`. A missing, empty, or unchanged placeholder path must be asked for once before any clone or local initialization begins.
+
+For ordinary recording, retrieval, and organization of the existing knowledge base, use the canonical root without asking for it again. Read \`AGENTS.md\`, \`AI/启动配置.md\`, \`AI/AI-GUIDE.md\`, \`AI/LOCAL.md\`, and the relevant repository skill before operating. Use only conversation content visible in the current task and follow all repository safety and confirmation rules. Never upload or delete without separate authorization.
 EOF
 printf 'manager=work-knowledge-template\nknowledge_base=%s\n' "$kb_path" > "$marker"
 echo "Codex skill 安装完成：$dir"
