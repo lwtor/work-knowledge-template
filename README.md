@@ -35,14 +35,14 @@
 请读取下面这个文件，并严格按照其中协议为我创建或接入个人工作知识库：
 https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 
-本地保存位置：[可选：可填写父目录，例如 E:\work，Agent 会在其中创建 work-knowledge 子目录；如果保留此占位文字不修改，请先询问我一次]
+本地父目录：[可选：例如 E:\work；最终知识库将创建为 E:\work\work-knowledge。如果保留此占位文字不修改，请先询问我一次]
 
 除协议明确列出的登录授权、路径询问或冲突外，不要让我手工操作。
 ```
 
 完整流程见 AI/一键初始化.md。个人独立仓库默认通过模板生成并设为私有；只有明确要求保留上游关系时才真正 fork。
 
-本地保存位置可以直接写在首次指令中，例如 E:\work。它可以是已有的父目录；Agent 会在其中创建 work-knowledge 子目录，不会因为父目录包含其他项目而要求重新选择。没有填写时只询问一次，后续会话不再询问。
+首次指令填写的是本地父目录，例如 E:\work；Agent 固定在其下 clone 为 E:\work\work-knowledge。父目录可以包含其他项目。没有填写时只询问一次，后续会话不再询问。
 ## 给 AI Agent 的启动指令
 
 把本仓库的 GitHub URL 替换到下面的 `[GitHub URL]`：
