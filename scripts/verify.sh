@@ -5,7 +5,6 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 required=(
   "README.md"
   "BOOTSTRAP.md"
-  "bootstrap.config.yaml"
   "Home.md"
   "AGENTS.md"
   "AI/启动配置.md"

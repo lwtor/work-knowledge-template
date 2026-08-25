@@ -1,9 +1,0 @@
-version: 1
-repository:
-  name: work-knowledge
-  visibility: private
-local_path:
-  windows: ""
-  macos: ""
-  linux: ""
-on_missing_local_path: ask_once
