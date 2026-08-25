@@ -49,6 +49,8 @@ if [[ -f "$target_dir/.kb-role" ]]; then
   printf 'personal\n' > "$target_dir/.kb-role"
 fi
 
+bash "$target_dir/scripts/install-codex-skill.sh" "$target_dir"
+
 cat <<EOF
 知识库模板初始化完成。
 
@@ -57,6 +59,6 @@ cat <<EOF
 
 下一步：
 1. 用 Obsidian 打开这个目录；
-2. 让 AI Agent 读取 AI/启动配置.md 和 AI/AI-GUIDE.md；
-3. 先执行读取和搜索测试，再开始写入内容。
+2. 新建 Codex 会话，直接说“把刚刚的对话总结到知识库”；
+3. 其他 AI Agent 仍需读取 AI/启动配置.md 和 AI/AI-GUIDE.md。
 EOF

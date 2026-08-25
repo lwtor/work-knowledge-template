@@ -27,6 +27,15 @@
 
 仓库角色由根目录的 `.kb-role` 标识：`template` 表示模板仓库，`personal` 表示个人知识库仓库。Agent 在初始化、同步和更新前必须先检查这个标识。
 
+## 一句话创建或接入
+
+把模板 URL 和下面这句话发给具备 GitHub 与本地文件权限的 Agent：
+
+> 请读取 https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md，并严格按照其中协议为我创建或接入个人工作知识库。除协议明确列出的登录授权或冲突外，不要让我手工操作。
+
+完整流程见 AI/一键初始化.md。个人独立仓库默认通过模板生成并设为私有；只有明确要求保留上游关系时才真正 fork。
+
+本地路径可在 bootstrap.config.yaml 中预先填写，也可写在首次指令中。两处都为空时，Agent 只询问一次保存目录；回答后继续初始化，后续会话不再询问。
 ## 给 AI Agent 的启动指令
 
 把本仓库的 GitHub URL 替换到下面的 `[GitHub URL]`：
@@ -60,6 +69,9 @@
 ```
 
 验证模板结构是否完整、是否仍然保持空白。
+初始化脚本还会把 work-knowledge skill 注册到 Codex 的个人 skills 目录。注册后，在任意新的 Codex 会话中可直接说“把刚刚的对话总结到知识库”，不需要重复提供路径。
+
+知识库移动后可执行 ./scripts/install-codex-skill.sh 重新注册，再用 ./scripts/verify.sh 验证。全局 skill 只保存路径和入口；实际规则仍以 AI/AI-GUIDE.md 为准。新会话不能读取其他会话的正文。
 
 ## 公司电脑无法 push 时
 
