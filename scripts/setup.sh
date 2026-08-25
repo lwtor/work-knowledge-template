@@ -7,7 +7,8 @@ usage() {
   ./scripts/setup.sh /path/to/local-knowledge-base
 
 说明：
-  将当前 GitHub 模板安全复制到新的本地知识库目录。
+  手动将已克隆的模板复制到新的最终知识库目录。
+  本脚本不用于 BOOTSTRAP.md 的 GitHub 一键 clone 流程。
   目标目录不存在时会创建；目标目录存在且非空时会停止，不会覆盖内容。
 EOF
 }
