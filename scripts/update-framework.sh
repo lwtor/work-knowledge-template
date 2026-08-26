@@ -46,7 +46,11 @@ local_rules=""
 if [[ -f "$root/AI/LOCAL.md" ]]; then local_rules="$(mktemp /tmp/kb-local-rules.XXXXXX)"; cp "$root/AI/LOCAL.md" "$local_rules"; fi
 for path in "${framework[@]}"; do rm -rf "$root/$path"; cp -R "$source_dir/$path" "$root/$path"; done
 [[ -z "$local_rules" ]] || { cp "$local_rules" "$root/AI/LOCAL.md"; rm -f "$local_rules"; }
+for path in "AI/写入日志.md" "AI/写入日志"; do
+  if [[ -e "$backup/$path" ]]; then rm -rf "$root/$path"; mkdir -p "$root/$(dirname "$path")"; cp -R "$backup/$path" "$root/$path"; fi
+done
+mkdir -p "$root/Archive/Knowledge" "$root/Archive/Projects"
 [[ ! -e "$root/skills" ]] || rm -rf "$root/skills"
 echo "框架已更新：$target_version -> $source_version"
 echo "备份：$backup"
-echo "个人数据目录未被操作。提交和推送尚未执行。"
+echo "个人数据、归档、个人规则和写入日志未被覆盖。提交和推送尚未执行。"

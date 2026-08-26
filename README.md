@@ -12,6 +12,7 @@
 - `Projects/`：项目资料和过程记录
 - `Inbox/`：尚未整理的临时内容
 - `Daily/`：日常工作记录
+- `Archive/`：经确认归档、默认不参与检索的历史内容
 - `Templates/`：笔记模板
 - `AI/`：Agent 接入、检索、写入和安全规则
 
@@ -51,7 +52,15 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 初始化完成后，Codex Skill 会安装到当前用户的 Codex Skills 目录。Windows 使用 `scripts/install-codex-skill.ps1` 和 `scripts/verify.ps1`；macOS/Linux 使用对应的 `.sh` 脚本。新会话可以直接要求记录、整理或查询知识库，无需重复提供本地路径。
 ## 公司电脑无法 push 时
 
-使用 `scripts/kb-transfer.py` 生成加密增量包，通过手机或 U 盘带回家。详细流程见 `AI/离线同步.md`。该工具只传输个人数据目录，不传输整个仓库，也不会生成明文同步包。
+使用 `scripts/kb-transfer.py` 在两台设备间生成和导入加密增量包。详细流程见 `AI/离线同步.md`。该工具只传输个人数据目录，不传输整个仓库；双方分叉时不会覆盖，而会生成冲突报告供用户确认。
+
+## 长期维护
+
+- `python scripts/kb-lint.py`：只读检查元数据、链接、Inbox 滞留、待复核、附件和疑似重复。
+- `python scripts/kb-secret-scan.py`：只报告疑似秘密的位置与规则，不显示秘密原文。
+- `python scripts/kb-index.py`：重建知识索引、项目索引、待复核清单和跨项目待办。
+
+新笔记采用最小 frontmatter；旧笔记渐进补齐，不在框架升级时批量改写。详见 `AI/知识维护.md`。
 
 ## 更新模板框架
 
@@ -69,7 +78,7 @@ macOS/Linux：
 ./scripts/update-framework.sh https://github.com/lwtor/work-knowledge-template.git --yes
 ```
 
-更新只操作框架路径，保留个人数据和 `AI/LOCAL.md`；完成后不会自动提交或推送。
+更新只操作框架路径，保留个人数据、归档、个人规则和写入日志；完成后不会自动提交或推送。
 ## Obsidian
 
 安装 Obsidian 后，选择本仓库的本地目录作为 Vault，打开 `Home.md`。

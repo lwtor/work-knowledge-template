@@ -1,6 +1,6 @@
 # 工作知识库入口
 
-这是个人工作知识库。执行知识库相关任务前，先阅读 `README.md`、`AI/启动配置.md` 和 `AI/AI-GUIDE.md`。
+这是个人工作知识库。执行知识库相关任务前，先阅读 `README.md`、`AI/启动配置.md` 和 `AI/AI-GUIDE.md`；执行巡检、索引、归档或生命周期维护时再读取 `AI/知识维护.md`。
 
 当前仓库只提供 Codex 专用接入：`integrations/codex/work-knowledge/`。不要把该目录描述为通用 Agent Skill，也不要推断其他 Agent 已受支持。
 

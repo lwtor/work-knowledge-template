@@ -20,5 +20,6 @@ Before operating, read `AGENTS.md`, `AI/启动配置.md`, `AI/AI-GUIDE.md`, and 
 - To save, summarize, remember, organize, or update conversation material, read `references/ingest.md`.
 - To retrieve or search existing knowledge, read `references/query.md`.
 - To create or maintain project context, links, progress, or tasks, read `references/project.md`.
+- To lint, rebuild indexes, review stale knowledge, clean Inbox/Daily, archive, or handle attachments, read `AI/知识维护.md` and `references/maintenance.md`.
 
-Use only content visible in the current Codex task. Follow preview, confirmation, logging, sensitivity, and no-silent-overwrite rules. Never upload, delete, merge, archive, or broadly rename content without separate authorization.
+Use only content visible in the current Codex task. Follow preview, confirmation, monthly logging, sensitivity, and no-silent-overwrite rules. Never upload, delete, merge, archive, or broadly rename content without separate authorization. Generated indexes are disposable views; notes remain authoritative.

@@ -4,7 +4,7 @@ input="${1:-$(dirname "$0")/..}"
 command -v cygpath >/dev/null 2>&1 && input="$(cygpath -u "$input")"
 root="$(cd "$input" && pwd)"
 source_dir="$root/integrations/codex/work-knowledge"
-for f in AGENTS.md AI/启动配置.md AI/AI-GUIDE.md "$source_dir/SKILL.md" "$source_dir/references/ingest.md" "$source_dir/references/query.md" "$source_dir/references/project.md"; do
+for f in AGENTS.md AI/启动配置.md AI/AI-GUIDE.md AI/知识维护.md "$source_dir/SKILL.md" "$source_dir/references/ingest.md" "$source_dir/references/query.md" "$source_dir/references/project.md" "$source_dir/references/maintenance.md"; do
   [[ -f "$f" ]] || { echo "错误：缺少 $f" >&2; exit 1; }
 done
 command -v cygpath >/dev/null 2>&1 && kb_path="$(cygpath -w "$root")" || kb_path="$root"

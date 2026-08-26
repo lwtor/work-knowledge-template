@@ -13,7 +13,7 @@
 
 允许更新的框架范围：`README.md`、`AGENTS.md`、`Home.md`、`AI/`、`Templates/`、`scripts/`、`integrations/`、`.gitignore`、`.kb-version`。
 
-必须保留：`Knowledge/`、`Projects/`、`Daily/`、`Inbox/`、`Attachments/`、`AI/LOCAL.md`、`.kb-role`，以及不属于已知框架路径的用户文件。
+必须保留：`Knowledge/`、`Projects/`、`Daily/`、`Inbox/`、`Attachments/`、`Archive/`、`AI/LOCAL.md`、`AI/写入日志.md`、`AI/写入日志/`、`.kb-role`，以及不属于已知框架路径的用户文件。
 
 ## 必须执行
 
@@ -21,7 +21,7 @@
 2. 展示版本变化、将更新的框架路径、受保护目录和备份位置。
 3. 等待用户确认；拒绝或未确认时不修改任何文件，个人仓库继续按原版本使用。
 4. 确认后运行当前模板提供的更新器：Windows 使用 `scripts/update-framework.ps1` 并显式传入个人仓库路径；macOS/Linux 使用 `scripts/update-framework.sh --target`。
-5. 更新器必须先备份旧框架，只复制允许范围，并恢复 `AI/LOCAL.md`。
+5. 更新器必须先备份旧框架，只复制允许范围，并恢复个人规则与写入日志；旧版单文件日志不得丢失。
 6. 使用更新后的个人仓库自身验证脚本完成验证。
 7. 展示变更摘要。提交和推送分别需要用户再次明确授权，不得自动执行。
 

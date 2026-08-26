@@ -20,7 +20,7 @@ try {
     $targetVersion = (Get-Content -Raw -LiteralPath (Join-Path $target '.kb-version')).Trim()
     if ($sourceVersion -eq $targetVersion) { Write-Host "当前已是模板版本 $targetVersion，无需更新。"; return }
     $framework = @('README.md','AGENTS.md','Home.md','AI','Templates','scripts','integrations','.gitignore','.kb-version')
-    $protected = @('Knowledge','Projects','Daily','Inbox','Attachments','AI\LOCAL.md','.kb-role')
+    $protected = @('Knowledge','Projects','Daily','Inbox','Attachments','Archive','AI\LOCAL.md','AI\写入日志.md','AI\写入日志','.kb-role')
     Write-Host "框架版本：$targetVersion -> $sourceVersion"
     Write-Host ('将更新：' + ($framework -join ', '))
     Write-Host ('将保护：' + ($protected -join ', '))
@@ -48,10 +48,20 @@ try {
         Copy-Item -LiteralPath $incoming -Destination $current -Recurse -Force
     }
     if (Test-Path -LiteralPath $localCopy -PathType Leaf) { Copy-Item -LiteralPath $localCopy -Destination (Join-Path $target 'AI\LOCAL.md') -Force }
+    foreach ($relative in @('AI\写入日志.md','AI\写入日志')) {
+        $saved = Join-Path $backup $relative
+        if (Test-Path -LiteralPath $saved) {
+            $destination = Join-Path $target $relative
+            if (Test-Path -LiteralPath $destination) { Remove-Item -LiteralPath $destination -Recurse -Force }
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
+            Copy-Item -LiteralPath $saved -Destination $destination -Recurse -Force
+        }
+    }
+    foreach ($relative in @('Archive\Knowledge','Archive\Projects')) { New-Item -ItemType Directory -Force -Path (Join-Path $target $relative) | Out-Null }
     if (Test-Path -LiteralPath $legacy) { Remove-Item -LiteralPath $legacy -Recurse -Force }
     Write-Host "框架已更新到 $sourceVersion"
     Write-Host "备份：$backup"
-    Write-Host '个人数据目录未被操作。提交和推送尚未执行。'
+    Write-Host '个人数据、归档、个人规则和写入日志未被覆盖。提交和推送尚未执行。'
 } finally {
     if (Test-Path -LiteralPath $temp) { Remove-Item -LiteralPath $temp -Recurse -Force }
 }

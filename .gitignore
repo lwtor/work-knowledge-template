@@ -14,3 +14,14 @@
 # 框架更新前的本地备份
 .kb-backups/
 .kb-transfer/
+
+# 常见本地凭证文件；提交前仍应运行敏感信息扫描
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+*.keystore
+credentials.*
+secrets.*

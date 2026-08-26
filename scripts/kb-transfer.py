@@ -23,10 +23,12 @@ from datetime import datetime, timezone
 
 
 FORMAT_VERSION = 1
-DATA_ROOTS = ("Knowledge", "Projects", "Daily", "Inbox", "Attachments")
+DATA_ROOTS = ("Knowledge", "Projects", "Daily", "Inbox", "Attachments", "Archive", "AI/写入日志")
 PLACEHOLDER_FILES = {f"{name}/README.md" for name in DATA_ROOTS}
+DERIVED_FILES = {"Knowledge/INDEX.md", "Projects/INDEX.md", "Projects/TASKS.md", "AI/待复核清单.md"}
 STATE_DIR = ".kb-transfer"
 STATE_FILE = "manifest.json"
+BASE_DIR = "base"
 
 
 def fail(message: str) -> "NoReturn":
@@ -65,7 +67,7 @@ def data_files(root: Path) -> dict[str, dict[str, int | str]]:
             if not path.is_file() or path.is_symlink():
                 continue
             relative = rel_key(path, root)
-            if relative in PLACEHOLDER_FILES:
+            if relative in PLACEHOLDER_FILES or relative in DERIVED_FILES or path.name == ".gitkeep":
                 continue
             digest = hashlib.sha256(path.read_bytes()).hexdigest()
             result[relative] = {"sha256": digest, "size": path.stat().st_size}
@@ -99,6 +101,23 @@ def write_state(root: Path, manifest: dict[str, dict[str, int | str]]) -> None:
     temporary = directory / f"{STATE_FILE}.tmp"
     temporary.write_bytes(json_bytes(manifest))
     os.replace(temporary, directory / STATE_FILE)
+
+
+def write_base_snapshot(root: Path, manifest: dict[str, dict[str, int | str]]) -> None:
+    base = root / STATE_DIR / BASE_DIR
+    temporary = root / STATE_DIR / f"{BASE_DIR}.tmp"
+    if temporary.exists():
+        shutil.rmtree(temporary)
+    for relative in manifest:
+        source = root / safe_relative(relative)
+        if source.is_file():
+            destination = temporary / safe_relative(relative)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+    if base.exists():
+        shutil.rmtree(base)
+    if temporary.exists():
+        os.replace(temporary, base)
 
 
 def safe_relative(value: str) -> Path:
@@ -180,11 +199,78 @@ def check_package_conflict(root: Path, metadata: dict) -> None:
     current = data_files(root)
     current_hash = manifest_hash(current)
     expected = metadata.get("base_manifest_sha256", "")
+    target = metadata.get("target_manifest_sha256", "")
+    if current_hash == target:
+        return
     if current_hash != expected:
-        fail(
-            "检测到本地个人数据与传输包的基础版本不一致，已停止导入。"
-            "请先同步另一台电脑的修改，或由你确认如何合并冲突。"
-        )
+        raise ValueError("base-manifest-mismatch")
+
+
+def create_conflict_report(age: str, package: Path, root: Path, metadata: dict, deleted: list[str], identity_file: str | None) -> Path:
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    conflict = root / STATE_DIR / "conflicts" / stamp
+    incoming = conflict / "incoming"
+    local = conflict / "local"
+    base_output = conflict / "base"
+    conflict.mkdir(parents=True, exist_ok=False)
+    command = [age, "-d", "-i", identity_file, str(package)] if identity_file else [age, "-d", str(package)]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+    assert process.stdout is not None
+    incoming_paths: list[str] = []
+    with tarfile.open(fileobj=process.stdout, mode="r|gz") as archive:
+        for member in archive:
+            if not member.name.startswith("files/") or not member.isfile():
+                continue
+            relative = safe_relative(member.name[len("files/"):])
+            incoming_paths.append(relative.as_posix())
+            stream = archive.extractfile(member)
+            if stream is None:
+                continue
+            destination = incoming / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with destination.open("wb") as output:
+                shutil.copyfileobj(stream, output)
+    if process.wait() != 0:
+        shutil.rmtree(conflict, ignore_errors=True)
+        fail("age 解密失败，请检查密码或传输包是否损坏。")
+    base_source = root / STATE_DIR / BASE_DIR
+    affected_paths = sorted(set(incoming_paths) | set(deleted))
+    for value in affected_paths:
+        relative = safe_relative(value)
+        current = root / relative
+        if current.is_file():
+            destination = local / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(current, destination)
+        baseline = base_source / relative
+        if baseline.is_file():
+            destination = base_output / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(baseline, destination)
+    (conflict / "metadata.json").write_bytes(json_bytes(metadata))
+    report = [
+        "# 离线同步冲突",
+        "",
+        "导入未修改知识库，也未更新 manifest。请比较 `base/`、`local/`、`incoming/` 后决定如何处理。",
+        "",
+        "- 不得自动覆盖或合并结论。",
+        "- `base/` 只在本机保留了共同基线快照时存在对应文件。",
+        "- 用户确认解决后，先手工更新知识库，再重新导出新的增量包。",
+        "",
+        "## 传入文件",
+        "",
+    ] + [f"- 修改：`{value}`" for value in incoming_paths] + [f"- 删除：`{value}`" for value in deleted]
+    (conflict / "REPORT.md").write_text("\n".join(report) + "\n", encoding="utf-8", newline="\n")
+    return conflict
+
+
+def run_secret_scan(root: Path) -> None:
+    scanner = root / "scripts" / "kb-secret-scan.py"
+    if not scanner.is_file():
+        fail("缺少 scripts/kb-secret-scan.py，无法在导出前执行敏感信息扫描。")
+    result = subprocess.run([sys.executable, str(scanner), "--vault", str(root)], check=False)
+    if result.returncode != 0:
+        fail("敏感信息扫描未通过，未生成传输包。")
 
 
 def apply_package(age: str, package: Path, root: Path, manifest: dict, deleted: list[str], identity_file: str | None) -> None:
@@ -235,6 +321,7 @@ def command_doctor(args: argparse.Namespace) -> None:
 
 def command_export(args: argparse.Namespace) -> None:
     root = vault_root(args.vault)
+    run_secret_scan(root)
     age = age_path()
     output = Path(args.out).expanduser().resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -255,6 +342,7 @@ def command_export(args: argparse.Namespace) -> None:
     }
     run_age_encrypt(age, output, root, changed, metadata, current, deleted, args.recipient_file)
     write_state(root, current)
+    write_base_snapshot(root, current)
     print(json.dumps({
         "package": str(output),
         "changed_files": len(changed),
@@ -269,8 +357,16 @@ def command_import(args: argparse.Namespace) -> None:
     age = age_path()
     package = Path(args.package).expanduser().resolve()
     metadata, manifest, deleted = read_decrypted_package(age, package, args.identity_file)
-    check_package_conflict(root, metadata)
+    try:
+        check_package_conflict(root, metadata)
+    except ValueError:
+        conflict = create_conflict_report(age, package, root, metadata, deleted, args.identity_file)
+        fail(
+            "检测到本地与传输包从共同基础分叉，未修改知识库。"
+            f"冲突材料已写入：{conflict}"
+        )
     apply_package(age, package, root, manifest, deleted, args.identity_file)
+    write_base_snapshot(root, manifest)
     print(json.dumps({
         "vault": str(root),
         "imported": True,
@@ -287,7 +383,7 @@ def parser() -> argparse.ArgumentParser:
     doctor = sub.add_parser("doctor", help="检查 Python、Git、age 和数据目录")
     doctor.add_argument("--vault", default=argparse.SUPPRESS, help="知识库路径")
     doctor.set_defaults(handler=command_doctor)
-    export = sub.add_parser("export", help="生成加密增量传输包")
+    export = sub.add_parser("export", help="生成可发往任一设备的加密增量传输包")
     export.add_argument("--vault", default=argparse.SUPPRESS, help="知识库路径")
     export.add_argument("--out", required=True, help="输出 .age 文件路径")
     export.add_argument("--recipient-file", help="可选：age 公钥文件；提供后不询问密码")
