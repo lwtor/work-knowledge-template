@@ -1,4 +1,4 @@
-param([string]$KnowledgeBaseRoot = (Split-Path -Parent $PSScriptRoot), [string]$CodexHome = '')
+﻿param([string]$KnowledgeBaseRoot = (Split-Path -Parent $PSScriptRoot), [string]$CodexHome = '')
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath $KnowledgeBaseRoot).Path
 $source = Join-Path $root 'integrations\codex\work-knowledge'
