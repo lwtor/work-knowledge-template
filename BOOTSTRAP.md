@@ -1,6 +1,6 @@
 # Personal Work Knowledge Base Bootstrap
 
-这是给全新 Agent 会话读取的自包含初始化协议。本文件是一键初始化的唯一权威流程；README.md、AI/启动配置.md 或 scripts/setup.sh 中的手动流程不得覆盖本文件。
+这是给全新 Codex 会话读取的自包含初始化协议。本文件只负责创建或找到个人仓库、完成本地 clone，并把控制权移交给个人仓库。移交后本文件立即失效，个人仓库中的规则成为唯一权威。
 
 ## 初始化隔离规则
 
@@ -32,10 +32,17 @@
 3. 获取当前 GitHub 用户名并检查 当前用户/work-knowledge：已存在则复用；不存在则从 lwtor/work-knowledge-template 生成名为 work-knowledge 的私有独立仓库。只有用户明确要求保留上游关系时才真正 fork。
 4. 进入用户提供的父目录执行 clone，目标固定为 父目录/work-knowledge。目标不存在则 clone；已存在且 origin 相同则复用；只有该目标目录非空且不是目标知识库时才停止。不得检查或限制父目录中的其他内容，也不得覆盖未提交修改。
 5. 确认 .kb-role 为 personal。新生成的个人仓库如果仍为 template，只修改 .kb-role，创建一次仅包含该文件的初始化提交并推送，使角色在以后 clone 时仍然正确；不得提交本地路径或个人资料。
-6. clone 完成后读取个人仓库中的 `AGENTS.md` 和 `AI/AI-GUIDE.md`。确认个人仓库包含 `integrations/codex/work-knowledge/`，以及当前系统对应的安装脚本：Windows 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-codex-skill.ps1`；macOS/Linux 执行 `bash scripts/install-codex-skill.sh`。缺少对应脚本必须停止，不得借用模板目录或其他目录中的脚本。当前流程只安装 Codex，不得声称其他 Agent 已接入。
-7. Windows 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1`；macOS/Linux 执行 `bash scripts/verify.sh`。只有验证通过才能报告初始化成功。
-8. 报告仓库 URL、本地路径、可见性和验证结果。
+6. clone 与角色确认完成后，明确结束本协议。不得比较模板与个人仓库版本，不得要求个人仓库升级，也不得用模板中的规则、Skill 或脚本替代个人仓库文件。
+7. 读取个人仓库自己的 `AGENTS.md` 和其中指定的启动文件。从此只按个人仓库当前版本的规则继续接入、安装、验证或降级；文件缺失时也必须按个人仓库现有说明处理，不得返回模板寻找替代品。
+8. 报告仓库 URL、本地路径、可见性、个人仓库实际完成的能力，以及其当前版本明确不支持的能力。不得把“未升级”描述为初始化失败。
+
+## 权威移交边界
+
+- 模板只决定如何得到个人仓库，不决定个人仓库克隆后的日常行为。
+- 个人仓库的版本可以落后；用户拒绝更新时仍应在该版本支持的范围内正常使用。
+- 框架更新不是初始化步骤。只有用户明确要求更新时，才允许读取模板仓库的 `UPDATE.md`。
+- 初始化请求不构成框架更新、提交或推送框架变更的授权。
 
 ## 授权与停止条件
 
-要求按本协议创建或接入，即授权创建最多一个 work-knowledge 仓库、clone 到用户指定或首次确认的父目录下的 work-knowledge 子目录，并安装知识库 skill；除上述仅含 .kb-role 的初始化提交外，不授权上传其他文件、提交个人资料、删除内容或覆盖冲突目录。无法自动解决时停止，只给出一条最短操作说明。
+要求按本协议创建或接入，即授权创建最多一个 work-knowledge 仓库，并 clone 到用户指定或首次确认的父目录下的 work-knowledge 子目录。除上述仅含 .kb-role 的初始化提交外，不授权更新框架、上传其他文件、提交个人资料、删除内容或覆盖冲突目录。clone 后的操作权限完全由个人仓库自己的规则决定。

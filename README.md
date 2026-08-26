@@ -27,6 +27,11 @@
 
 仓库角色由根目录的 `.kb-role` 标识：`template` 表示模板仓库，`personal` 表示个人知识库仓库。Agent 在初始化、同步和更新前必须先检查这个标识。
 
+## 协议边界
+
+- `BOOTSTRAP.md` 只负责创建或克隆个人仓库，随后把控制权交给个人仓库。
+- `UPDATE.md` 只在用户明确要求更新框架时使用。
+- 初始化不会自动升级个人仓库；拒绝升级不影响使用当前版本。
 ## 一句话创建或接入
 
 复制下面的纯文本，把占位内容改成你要保存到的父目录，然后发给 Agent；不修改时 Agent 会先询问：
@@ -50,15 +55,21 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 
 ## 更新模板框架
 
-在个人知识库仓库中，先提交当前修改，再执行：
+只有你明确要求更新时才执行；拒绝更新不影响当前版本继续使用。详细规则见 `AI/框架更新.md`。
 
-```bash
-./scripts/update-framework.sh [模板目录或 GitHub URL] --yes
-./scripts/verify.sh
+Windows：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/update-framework.ps1 -Confirm
 ```
 
-脚本会先备份框架文件，只更新 `README.md`、`AGENTS.md`、`Home.md`、`AI/`、`Templates/`、`scripts/`、`integrations/codex/`、`.gitignore` 和 `.kb-version`，不会操作个人数据目录。
+macOS/Linux：
 
+```bash
+./scripts/update-framework.sh https://github.com/lwtor/work-knowledge-template.git --yes
+```
+
+更新只操作框架路径，保留个人数据和 `AI/LOCAL.md`；完成后不会自动提交或推送。
 ## Obsidian
 
 安装 Obsidian 后，选择本仓库的本地目录作为 Vault，打开 `Home.md`。
