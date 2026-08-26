@@ -41,6 +41,9 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 ```
 
 
+## Codex 接入
+
+初始化完成后，Codex Skill 会安装到当前用户的 Codex Skills 目录。Windows 使用 `scripts/install-codex-skill.ps1` 和 `scripts/verify.ps1`；macOS/Linux 使用对应的 `.sh` 脚本。新会话可以直接要求记录、整理或查询知识库，无需重复提供本地路径。
 ## 公司电脑无法 push 时
 
 使用 `scripts/kb-transfer.py` 生成加密增量包，通过手机或 U 盘带回家。详细流程见 `AI/离线同步.md`。该工具只传输个人数据目录，不传输整个仓库，也不会生成明文同步包。
@@ -54,7 +57,7 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 ./scripts/verify.sh
 ```
 
-脚本会先备份框架文件，只更新 `README.md`、`AGENTS.md`、`Home.md`、`AI/`、`Templates/`、`scripts/`、`skills/`、`.gitignore` 和 `.kb-version`，不会操作个人数据目录。
+脚本会先备份框架文件，只更新 `README.md`、`AGENTS.md`、`Home.md`、`AI/`、`Templates/`、`scripts/`、`integrations/codex/`、`.gitignore` 和 `.kb-version`，不会操作个人数据目录。
 
 ## Obsidian
 

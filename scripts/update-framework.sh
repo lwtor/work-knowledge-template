@@ -71,7 +71,7 @@ else
   source_dir="$temp_dir/source"
 fi
 
-required=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "skills" ".gitignore" ".kb-version")
+required=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "integrations" ".gitignore" ".kb-version")
 for path in "${required[@]}"; do
   [[ -e "$source_dir/$path" ]] || { echo "错误：模板缺少 $path。" >&2; exit 1; }
 done
@@ -84,7 +84,15 @@ done
 backup_dir="$root/.kb-backups/framework-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$backup_dir"
 
-framework_paths=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "skills" ".gitignore" ".kb-version")
+if [[ -e "$root/skills" ]]; then
+  [[ -f "$root/skills/README.md" ]] && grep -Fq '# Agent Skills' "$root/skills/README.md" || {
+    echo "错误：发现非旧版知识库框架管理的 skills/，拒绝自动删除。" >&2
+    exit 1
+  }
+  cp -R "$root/skills" "$backup_dir/"
+fi
+
+framework_paths=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "integrations" ".gitignore" ".kb-version")
 for path in "${framework_paths[@]}"; do
   if [[ -e "$root/$path" ]]; then
     mkdir -p "$backup_dir/$(dirname "$path")"
@@ -96,6 +104,11 @@ for path in "${framework_paths[@]}"; do
   rm -rf "$root/$path"
   cp -R "$source_dir/$path" "$root/$path"
 done
+
+if [[ -e "$root/skills" ]]; then
+  rm -rf "$root/skills"
+  echo "已迁移并移除旧通用 skills/；备份保存在框架备份目录。"
+fi
 
 if [[ -n "$local_rules_backup" ]]; then
   cp "$local_rules_backup" "$root/AI/LOCAL.md"

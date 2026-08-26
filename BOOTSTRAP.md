@@ -32,8 +32,8 @@
 3. 获取当前 GitHub 用户名并检查 当前用户/work-knowledge：已存在则复用；不存在则从 lwtor/work-knowledge-template 生成名为 work-knowledge 的私有独立仓库。只有用户明确要求保留上游关系时才真正 fork。
 4. 进入用户提供的父目录执行 clone，目标固定为 父目录/work-knowledge。目标不存在则 clone；已存在且 origin 相同则复用；只有该目标目录非空且不是目标知识库时才停止。不得检查或限制父目录中的其他内容，也不得覆盖未提交修改。
 5. 确认 .kb-role 为 personal。新生成的个人仓库如果仍为 template，只修改 .kb-role，创建一次仅包含该文件的初始化提交并推送，使角色在以后 clone 时仍然正确；不得提交本地路径或个人资料。
-6. clone 完成后读取个人仓库中的 AGENTS.md 和 AI/AI-GUIDE.md，再执行 scripts/install-codex-skill.sh。
-7. 执行 scripts/verify.sh。
+6. clone 完成后读取个人仓库中的 `AGENTS.md` 和 `AI/AI-GUIDE.md`。确认个人仓库包含 `integrations/codex/work-knowledge/`，以及当前系统对应的安装脚本：Windows 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-codex-skill.ps1`；macOS/Linux 执行 `bash scripts/install-codex-skill.sh`。缺少对应脚本必须停止，不得借用模板目录或其他目录中的脚本。当前流程只安装 Codex，不得声称其他 Agent 已接入。
+7. Windows 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1`；macOS/Linux 执行 `bash scripts/verify.sh`。只有验证通过才能报告初始化成功。
 8. 报告仓库 URL、本地路径、可见性和验证结果。
 
 ## 授权与停止条件
