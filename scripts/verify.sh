@@ -9,6 +9,8 @@ required=(
   "Templates/知识笔记.md" "Templates/项目总览.md" "Templates/问题解决.md" "Templates/日常记录.md"
   "scripts/install-codex-skill.ps1"
   "scripts/install-codex-skill.sh"
+  "scripts/install-bluecode-skill.ps1"
+  "scripts/install-bluecode-skill.sh"
   "scripts/verify.ps1"
   "scripts/update-framework.ps1"
   "scripts/kb_common.py" "scripts/kb-index.py" "scripts/kb-lint.py" "scripts/kb-secret-scan.py"
@@ -19,11 +21,17 @@ required=(
   "integrations/codex/work-knowledge/references/project.md"
   "integrations/codex/work-knowledge/references/maintenance.md"
   "integrations/codex/work-knowledge/references/update.md"
+  "integrations/bluecode/work-knowledge/SKILL.md"
+  "integrations/bluecode/work-knowledge/references/ingest.md"
+  "integrations/bluecode/work-knowledge/references/query.md"
+  "integrations/bluecode/work-knowledge/references/project.md"
+  "integrations/bluecode/work-knowledge/references/maintenance.md"
+  "integrations/bluecode/work-knowledge/references/update.md"
   ".gitignore"
 )
 [[ -f "$root/BOOTSTRAP.md" || -f "$root/.kb-role" ]] || { echo "缺少 BOOTSTRAP.md 或 .kb-role" >&2; exit 1; }
 for path in "${required[@]}"; do [[ -f "$root/$path" ]] || { echo "缺少文件：$path" >&2; exit 1; }; done
-[[ ! -e "$root/skills" ]] || { echo "发现旧的通用 skills/ 目录；当前只支持 integrations/codex。" >&2; exit 1; }
+[[ ! -e "$root/skills" ]] || { echo "发现旧的通用 skills/ 目录；当前只支持 integrations/codex 与 integrations/bluecode。" >&2; exit 1; }
 if rg -n '小V Copilot|发送按钮|WebSocket|示例-Git|code_analysis|xiaoV' "$root/Knowledge" "$root/Projects" --glob '*.md' >/dev/null 2>&1; then
   echo "发现不应出现在空白模板中的业务或示例资料。" >&2
   exit 1
@@ -59,4 +67,16 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "pers
   command -v cygpath >/dev/null 2>&1 && expected="$(cygpath -w "$root")" || expected="$root"
   grep -Fq "knowledge_base=$expected" "$marker" || { echo "Codex skill 路径不匹配；请重新安装" >&2; exit 1; }
   echo "Codex 全局知识库 skill 检查通过：$skill"
+
+  bhome="${BLUECODE_HOME:-$HOME/.bluecode}"
+  command -v cygpath >/dev/null 2>&1 && bhome="$(cygpath -u "$bhome")"
+  bdir="$bhome/skills/work-knowledge"
+  bmarker="$bdir/.managed-by-work-knowledge-template"
+  if [[ -e "$bdir" ]]; then
+    [[ -f "$bdir/SKILL.md" && -f "$bmarker" ]] || { echo "存在非模板管理的 BlueCode skill：$bdir" >&2; exit 1; }
+    grep -Fq "knowledge_base=$expected" "$bmarker" || { echo "BlueCode skill 路径不匹配；请重新安装" >&2; exit 1; }
+    echo "BlueCode 全局知识库 skill 检查通过：$bdir/SKILL.md"
+  else
+    echo "未安装 BlueCode skill（可选）；如需 BlueCode 全局接入请执行 ./scripts/install-bluecode-skill.sh"
+  fi
 fi
