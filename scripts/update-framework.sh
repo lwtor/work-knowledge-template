@@ -37,7 +37,7 @@ if [[ -n "$(git -C "$root" status --porcelain)" ]]; then
   while IFS= read -r path; do
     [[ -z "$path" ]] && continue
     case "$path" in
-      README.md|AGENTS.md|Home.md|.gitignore|.kb-version|Templates/*|scripts/*|integrations/*|AI/*) ;;
+      README.md|AGENTS.md|Home.md|.gitignore|.gitattributes|.kb-version|Templates/*|scripts/*|integrations/*|AI/*) ;;
       *) echo "错误：续跑已停止，发现框架白名单之外的修改：$path" >&2; exit 1 ;;
     esac
     case "$path" in
@@ -50,7 +50,7 @@ source_version="$(tr -d '[:space:]' < "$source_dir/.kb-version")"
 target_version="$(tr -d '[:space:]' < "$root/.kb-version")"
 if [[ "$source_version" == "$target_version" && "$resume" != "yes" ]]; then echo "当前已是模板版本 $target_version，无需更新。"; exit 0; fi
 [[ "$source_version" != "$target_version" ]] || echo "框架版本均为 $target_version；正在续跑此前中断的同版本更新。"
-framework=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "integrations" ".gitignore" ".kb-version")
+framework=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "integrations" ".gitignore" ".gitattributes" ".kb-version")
 additive=("Archive/README.md" "Knowledge/README.md" "Knowledge/INDEX.md" "Projects/README.md" "Projects/INDEX.md" "Projects/TASKS.md" "Inbox/README.md" "Daily/README.md")
 for path in "${framework[@]}"; do [[ -e "$source_dir/$path" ]] || { echo "错误：模板缺少 $path。" >&2; exit 1; }; done
 backup="$root/.kb-backups/framework-$(date +%Y%m%d-%H%M%S)"

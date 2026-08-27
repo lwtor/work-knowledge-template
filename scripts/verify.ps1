@@ -1,4 +1,4 @@
-﻿param([string]$KnowledgeBaseRoot = (Split-Path -Parent $PSScriptRoot), [string]$CodexHome = '', [string]$BlueCodeHome = '')
+﻿param([string]$KnowledgeBaseRoot = (Split-Path -Parent $PSScriptRoot), [string]$CodexHome = '', [string]$BlueCodeHome = '', [ValidateSet('Codex','BlueCode','All','Framework')][string]$Agent = 'Codex')
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath $KnowledgeBaseRoot).Path
 $required = @('README.md','Home.md','AGENTS.md','AI\启动配置.md','AI\AI-GUIDE.md','AI\知识维护.md','AI\写入日志\README.md','AI\待复核清单.md','Archive\README.md','Knowledge\README.md','Knowledge\INDEX.md','Projects\README.md','Projects\INDEX.md','Projects\TASKS.md','Inbox\README.md','Daily\README.md','Templates\知识笔记.md','Templates\项目总览.md','Templates\问题解决.md','Templates\日常记录.md','scripts\install-codex-skill.ps1','scripts\install-codex-skill.sh','scripts\install-bluecode-skill.ps1','scripts\install-bluecode-skill.sh','scripts\verify.ps1','scripts\verify.sh','scripts\update-framework.ps1','scripts\kb_common.py','scripts\kb-index.py','scripts\kb-lint.py','scripts\kb-secret-scan.py','AI\框架更新.md','integrations\codex\work-knowledge\SKILL.md','integrations\codex\work-knowledge\references\ingest.md','integrations\codex\work-knowledge\references\query.md','integrations\codex\work-knowledge\references\project.md','integrations\codex\work-knowledge\references\maintenance.md','integrations\codex\work-knowledge\references\update.md','integrations\bluecode\work-knowledge\SKILL.md','integrations\bluecode\work-knowledge\references\ingest.md','integrations\bluecode\work-knowledge\references\query.md','integrations\bluecode\work-knowledge\references\project.md','integrations\bluecode\work-knowledge\references\maintenance.md','integrations\bluecode\work-knowledge\references\update.md','.gitignore')
@@ -23,6 +23,7 @@ if ($repoRole -eq 'template') {
 }
 $roleFile = Join-Path $root '.kb-role'
 if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -LiteralPath $roleFile).Trim() -eq 'personal')) {
+ if ($Agent -in @('Codex','All')) {
   $configuredHome = $CodexHome
   if ([string]::IsNullOrWhiteSpace($configuredHome)) { $configuredHome = [Environment]::GetEnvironmentVariable('CODEX_HOME') }
   if ([string]::IsNullOrWhiteSpace($configuredHome)) { $configuredHome = Join-Path ([Environment]::GetFolderPath('UserProfile')) '.codex' }
@@ -41,7 +42,8 @@ if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -L
     if ((Get-FileHash -LiteralPath $sourceFile).Hash -ne (Get-FileHash -LiteralPath $installedFile).Hash) { throw "已安装 Codex Skill 与仓库版本不一致：$relative" }
   }
   Write-Host "Codex 全局 Skill 检查通过：$installed"
-
+ }
+ if ($Agent -in @('BlueCode','All')) {
   $bluecodeConfiguredHome = $BlueCodeHome
   if ([string]::IsNullOrWhiteSpace($bluecodeConfiguredHome)) { $bluecodeConfiguredHome = [Environment]::GetEnvironmentVariable('BLUECODE_HOME') }
   if ([string]::IsNullOrWhiteSpace($bluecodeConfiguredHome)) { $bluecodeConfiguredHome = Join-Path ([Environment]::GetFolderPath('UserProfile')) '.bluecode' }
@@ -61,8 +63,7 @@ if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -L
       if ((Get-FileHash -LiteralPath $sourceFile).Hash -ne (Get-FileHash -LiteralPath $installedFile).Hash) { throw "已安装 BlueCode Skill 与仓库版本不一致：$relative" }
     }
     Write-Host "BlueCode 全局 Skill 检查通过：$bluecodeInstalled"
-  } else {
-    Write-Host "未安装 BlueCode Skill（可选）；如需 BlueCode 全局接入请执行 scripts\install-bluecode-skill.ps1"
-  }
+  } else { throw '缺少 BlueCode Skill；请执行 scripts\install-bluecode-skill.ps1' }
+ }
 }
 Write-Host "知识库框架、读写能力和 Agent 接入检查通过：$root"

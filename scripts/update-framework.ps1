@@ -25,7 +25,7 @@ try {
             git -c core.quotepath=false -C $target diff --name-only
             git -c core.quotepath=false -C $target ls-files --others --exclude-standard
         ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique
-        $rootFiles = @('README.md','AGENTS.md','Home.md','.gitignore','.kb-version')
+        $rootFiles = @('README.md','AGENTS.md','Home.md','.gitignore','.gitattributes','.kb-version')
         foreach ($item in $changed) {
             $path = $item.Replace('\','/')
             $allowed = $rootFiles -contains $path -or $path.StartsWith('Templates/') -or $path.StartsWith('scripts/') -or $path.StartsWith('integrations/') -or $path.StartsWith('AI/')
@@ -38,7 +38,7 @@ try {
     $targetVersion = (Get-Content -Raw -LiteralPath (Join-Path $target '.kb-version')).Trim()
     if ($sourceVersion -eq $targetVersion -and -not $ResumeFrameworkUpdate) { Write-Host "当前已是模板版本 $targetVersion，无需更新。"; return }
     if ($sourceVersion -eq $targetVersion) { Write-Host "框架版本均为 $targetVersion；正在续跑此前中断的同版本更新。" }
-    $framework = @('README.md','AGENTS.md','Home.md','AI','Templates','scripts','integrations','.gitignore','.kb-version')
+    $framework = @('README.md','AGENTS.md','Home.md','AI','Templates','scripts','integrations','.gitignore','.gitattributes','.kb-version')
     $additive = @('Archive\README.md','Knowledge\README.md','Knowledge\INDEX.md','Projects\README.md','Projects\INDEX.md','Projects\TASKS.md','Inbox\README.md','Daily\README.md')
     $protected = @('Knowledge','Projects','Daily','Inbox','Attachments','Archive','AI\LOCAL.md','AI\写入日志.md','AI\写入日志','.kb-role')
     Write-Host "框架版本：$targetVersion -> $sourceVersion"

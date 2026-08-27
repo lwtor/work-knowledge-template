@@ -49,7 +49,7 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 
 ## Codex / BlueCode 接入
 
-初始化完成后，Codex Skill 会安装到当前用户的 Codex Skills 目录，BlueCode Skill 会安装到当前用户的 BlueCode Skills 目录（`~/.bluecode/skills/`）。Windows 使用 `scripts/install-codex-skill.ps1`、`scripts/install-bluecode-skill.ps1` 和 `scripts/verify.ps1`；macOS/Linux 使用对应的 `.sh` 脚本。新会话可以直接要求记录、整理或查询知识库，无需重复提供本地路径。
+初始化完成后，当前 Agent 对应的 Skill 会安装到其全局 Skills 目录。Windows 验证时使用 `scripts/verify.ps1 -Agent Codex` 或 `-Agent BlueCode`；macOS/Linux 使用 `scripts/verify.sh --agent codex` 或 `--agent bluecode`，不会要求安装另一种 Agent。新会话可以直接要求记录、整理或查询知识库，无需重复提供本地路径。
 
 BlueCode 在进程启动时加载一次全局 Skill；安装或更新 BlueCode Skill 后，需要重启 BlueCode 才会识别。
 

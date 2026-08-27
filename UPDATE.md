@@ -14,7 +14,7 @@
 
 ## 更新边界
 
-允许更新的框架范围：`README.md`、`AGENTS.md`、`Home.md`、`AI/`、`Templates/`、`scripts/`、`integrations/`、`.gitignore`、`.kb-version`。
+允许更新的框架范围：`README.md`、`AGENTS.md`、`Home.md`、`AI/`、`Templates/`、`scripts/`、`integrations/`、`.gitignore`、`.gitattributes`、`.kb-version`。
 
 必须保留：`Knowledge/`、`Projects/`、`Daily/`、`Inbox/`、`Attachments/`、`Archive/`、`AI/LOCAL.md`、`AI/写入日志.md`、`AI/写入日志/`、`.kb-role`，以及不属于已知框架路径的用户文件。
 
@@ -28,7 +28,7 @@
 4. 确认后从与本文件相同的最新模板版本运行更新器：Windows 使用模板的 `scripts/update-framework.ps1` 并显式传入个人仓库路径；macOS/Linux 使用模板的 `scripts/update-framework.sh --target`。不得因为个人仓库已有旧更新器而优先运行旧文件。
 5. 更新器必须先备份旧框架，只复制允许范围，并恢复个人规则与写入日志；旧版单文件日志不得丢失。
 6. 当前 Agent 是 Codex 或 BlueCode 时，使用更新后的个人仓库自身安装脚本重新安装对应的全局 Skill：Codex 用 `scripts/install-codex-skill.ps1`（Windows）/ `scripts/install-codex-skill.sh`（macOS/Linux），BlueCode 用 `scripts/install-bluecode-skill.ps1` / `scripts/install-bluecode-skill.sh`。不得从模板目录直接安装。其他 Agent 跳过此步。BlueCode 安装或重装后必须提示用户重启 BlueCode 进程，新 Skill 才会被加载。
-7. 使用更新后的个人仓库自身验证脚本完成验证，并确认已安装 Skill 与个人仓库版本一致。
+7. 使用更新后的个人仓库自身验证脚本并明确当前 Agent：Windows 使用 `scripts/verify.ps1 -Agent Codex` 或 `-Agent BlueCode`；macOS/Linux 使用 `scripts/verify.sh --agent codex` 或 `--agent bluecode`。不得因另一种可选 Agent 未安装或存在其他来源的 Skill 而失败。
 8. 展示变更摘要。提交和推送分别需要用户再次明确授权，不得自动执行。
 
 更新中断后的续跑仍需再次展示将执行的修复并获得确认。Windows 对最新模板更新器使用 `-ResumeFrameworkUpdate`；macOS/Linux 使用 `--resume-framework-update`。该开关不是通用的“忽略脏工作区”，只允许更新器通过上述白名单检查后恢复框架更新。
