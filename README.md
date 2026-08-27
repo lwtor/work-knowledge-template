@@ -68,7 +68,7 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 
 ## 更新模板框架
 
-只有你明确要求更新时才执行；拒绝更新不影响当前版本继续使用。详细规则见 `AI/框架更新.md`。
+只有你明确要求更新时才执行；拒绝更新不影响当前版本继续使用。更新操作先读取模板仓库最新 `UPDATE.md`，因此旧私人仓库不会依赖自身的旧更新协议；个人仓库规则仍用于提供附加保护，且新旧保护范围取并集。详细规则见 `AI/框架更新.md`。
 
 Windows：
 

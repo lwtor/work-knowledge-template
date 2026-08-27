@@ -21,7 +21,7 @@ Use this mode when the user asks to view, inspect, summarize, inventory, or chec
 6. If the latest version is newer, state that the current version remains usable and show this optional command once:
 
 ```text
-请把我的私人知识库框架更新到模板最新版本。更新前先展示版本变化、更新范围、受保护的个人数据和备份位置，等我确认后再执行；不要自动提交或推送。
+请读取 https://raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md，并严格按照其中最新协议把我的私人知识库框架更新到模板最新版本。更新前先展示版本变化、更新范围、受保护的个人数据和备份位置，等我确认后再执行；不要自动提交或推送。
 ```
 
 7. If the latest version cannot be read, report it as unavailable; do not guess. Never update, commit, or push from an overview request.

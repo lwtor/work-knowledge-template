@@ -1,7 +1,7 @@
 ﻿param([string]$KnowledgeBaseRoot = (Split-Path -Parent $PSScriptRoot), [string]$CodexHome = '')
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath $KnowledgeBaseRoot).Path
-$required = @('README.md','Home.md','AGENTS.md','AI\启动配置.md','AI\AI-GUIDE.md','AI\知识维护.md','AI\写入日志\README.md','AI\待复核清单.md','Archive\README.md','Knowledge\README.md','Knowledge\INDEX.md','Projects\README.md','Projects\INDEX.md','Projects\TASKS.md','Inbox\README.md','Daily\README.md','Templates\知识笔记.md','Templates\项目总览.md','Templates\问题解决.md','Templates\日常记录.md','scripts\install-codex-skill.ps1','scripts\install-codex-skill.sh','scripts\verify.ps1','scripts\verify.sh','scripts\update-framework.ps1','scripts\kb_common.py','scripts\kb-index.py','scripts\kb-lint.py','scripts\kb-secret-scan.py','AI\框架更新.md','integrations\codex\work-knowledge\SKILL.md','integrations\codex\work-knowledge\references\ingest.md','integrations\codex\work-knowledge\references\query.md','integrations\codex\work-knowledge\references\project.md','integrations\codex\work-knowledge\references\maintenance.md','.gitignore')
+$required = @('README.md','Home.md','AGENTS.md','AI\启动配置.md','AI\AI-GUIDE.md','AI\知识维护.md','AI\写入日志\README.md','AI\待复核清单.md','Archive\README.md','Knowledge\README.md','Knowledge\INDEX.md','Projects\README.md','Projects\INDEX.md','Projects\TASKS.md','Inbox\README.md','Daily\README.md','Templates\知识笔记.md','Templates\项目总览.md','Templates\问题解决.md','Templates\日常记录.md','scripts\install-codex-skill.ps1','scripts\install-codex-skill.sh','scripts\verify.ps1','scripts\verify.sh','scripts\update-framework.ps1','scripts\kb_common.py','scripts\kb-index.py','scripts\kb-lint.py','scripts\kb-secret-scan.py','AI\框架更新.md','integrations\codex\work-knowledge\SKILL.md','integrations\codex\work-knowledge\references\ingest.md','integrations\codex\work-knowledge\references\query.md','integrations\codex\work-knowledge\references\project.md','integrations\codex\work-knowledge\references\maintenance.md','integrations\codex\work-knowledge\references\update.md','.gitignore')
 if (-not (Test-Path -LiteralPath (Join-Path $root 'BOOTSTRAP.md') -PathType Leaf) -and -not (Test-Path -LiteralPath (Join-Path $root '.kb-role') -PathType Leaf)) { throw '缺少 BOOTSTRAP.md 或 .kb-role' }
 foreach ($relative in $required) { if (-not (Test-Path -LiteralPath (Join-Path $root $relative) -PathType Leaf)) { throw "缺少文件：$relative" } }
 if (Test-Path -LiteralPath (Join-Path $root 'skills')) { throw '发现旧的通用 skills 目录；当前只支持 integrations\codex。' }
@@ -16,6 +16,8 @@ if ($repoRole -eq 'template') {
   foreach ($marker in @('Recursively enumerate','.kb-version','raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version','Do not inspect only the first directory level')) { if (-not $queryRules.Contains($marker)) { throw "Codex 查询规则缺少概览契约：$marker" } }
   $ingestRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'integrations\codex\work-knowledge\references\ingest.md')
   foreach ($marker in @('Templates/','complete frontmatter','confidence: unverified')) { if (-not $ingestRules.Contains($marker)) { throw "Codex 写入规则缺少模板契约：$marker" } }
+  $updateRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'integrations\codex\work-knowledge\references\update.md')
+  foreach ($marker in @('raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md','temporary authority','preserve their union','Never use an old updater')) { if (-not $updateRules.Contains($marker)) { throw "Codex 更新规则缺少跨版本契约：$marker" } }
 }
 $roleFile = Join-Path $root '.kb-role'
 if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -LiteralPath $roleFile).Trim() -eq 'personal')) {
@@ -30,7 +32,7 @@ if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -L
   $actualRoot = [IO.Path]::GetFullPath($pathLine.Substring('knowledge_base='.Length)).TrimEnd('\')
   $expectedRoot = [IO.Path]::GetFullPath($root).TrimEnd('\')
   if (-not $actualRoot.Equals($expectedRoot,[StringComparison]::OrdinalIgnoreCase)) { throw "Codex Skill 路径不匹配：$actualRoot" }
-  foreach ($relative in @('SKILL.md','references\ingest.md','references\query.md','references\project.md','references\maintenance.md')) {
+  foreach ($relative in @('SKILL.md','references\ingest.md','references\query.md','references\project.md','references\maintenance.md','references\update.md')) {
     $sourceFile = Join-Path $root ('integrations\codex\work-knowledge\' + $relative)
     $installedFile = Join-Path $installed $relative
     if (-not (Test-Path -LiteralPath $installedFile -PathType Leaf)) { throw "已安装 Codex Skill 缺少文件：$relative" }

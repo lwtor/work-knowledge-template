@@ -17,6 +17,7 @@ Before operating, read `AGENTS.md`, `AI/启动配置.md`, `AI/AI-GUIDE.md`, and 
 
 ## Route the request
 
+- To update the knowledge-base framework itself, read `references/update.md` first. This route is distinct from updating a note or project record.
 - To save, summarize, remember, organize, or update conversation material, read `references/ingest.md`.
 - To retrieve or search existing knowledge, read `references/query.md`.
 - To create or maintain project context, links, progress, or tasks, read `references/project.md`.

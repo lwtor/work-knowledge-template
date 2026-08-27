@@ -18,6 +18,7 @@ required=(
   "integrations/codex/work-knowledge/references/query.md"
   "integrations/codex/work-knowledge/references/project.md"
   "integrations/codex/work-knowledge/references/maintenance.md"
+  "integrations/codex/work-knowledge/references/update.md"
   ".gitignore"
 )
 [[ -f "$root/BOOTSTRAP.md" || -f "$root/.kb-role" ]] || { echo "缺少 BOOTSTRAP.md 或 .kb-role" >&2; exit 1; }
@@ -40,6 +41,9 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
   done
   for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified'; do
     grep -Fq "$marker" "$root/integrations/codex/work-knowledge/references/ingest.md" || { echo "Codex 写入规则缺少模板契约：$marker" >&2; exit 1; }
+  done
+  for marker in 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md' 'temporary authority' 'preserve their union' 'Never use an old updater'; do
+    grep -Fq "$marker" "$root/integrations/codex/work-knowledge/references/update.md" || { echo "Codex 更新规则缺少跨版本契约：$marker" >&2; exit 1; }
   done
 fi
 echo "知识库框架检查通过：$root"
