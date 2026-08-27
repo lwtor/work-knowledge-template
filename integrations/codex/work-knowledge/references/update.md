@@ -8,5 +8,6 @@ Use this route only when the user explicitly asks to update or upgrade the perso
 4. Follow the latest protocol's preview and confirmation boundary. The user's request authorizes fetching and preparing the update, but not modifying files before the required preview is confirmed.
 5. Obtain and run the updater from the same latest template revision as the fetched protocol. Never use an old updater merely because it already exists in the personal repository.
 6. After the framework is copied, use only the updated personal repository's own install and verification scripts. Do not install the global Skill from a temporary template checkout.
+7. If a previous framework update stopped after modifying files, do not ask the user to discard or commit the partial framework blindly. After a new preview and confirmation, use the latest updater's resume option. It may continue only when there are no staged changes, every dirty path is on the framework allowlist, and protected personal data has no new differences. Otherwise stop.
 
 The update must not commit or push unless the user separately authorizes each action.

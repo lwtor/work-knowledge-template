@@ -17,7 +17,9 @@ if ($repoRole -eq 'template') {
   $ingestRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'integrations\codex\work-knowledge\references\ingest.md')
   foreach ($marker in @('Templates/','complete frontmatter','confidence: unverified')) { if (-not $ingestRules.Contains($marker)) { throw "Codex 写入规则缺少模板契约：$marker" } }
   $updateRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'integrations\codex\work-knowledge\references\update.md')
-  foreach ($marker in @('raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md','temporary authority','preserve their union','Never use an old updater')) { if (-not $updateRules.Contains($marker)) { throw "Codex 更新规则缺少跨版本契约：$marker" } }
+  foreach ($marker in @('raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md','temporary authority','preserve their union','Never use an old updater','no staged changes','framework allowlist')) { if (-not $updateRules.Contains($marker)) { throw "Codex 更新规则缺少跨版本契约：$marker" } }
+  $updater = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'scripts\update-framework.ps1')
+  foreach ($marker in @('ResumeFrameworkUpdate','仅缺失时补充且绝不覆盖','Knowledge\INDEX.md','续跑检查通过')) { if (-not $updater.Contains($marker)) { throw "Windows 更新器缺少兼容迁移契约：$marker" } }
 }
 $roleFile = Join-Path $root '.kb-role'
 if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -LiteralPath $roleFile).Trim() -eq 'personal')) {

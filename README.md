@@ -82,7 +82,7 @@ macOS/Linux：
 ./scripts/update-framework.sh https://github.com/lwtor/work-knowledge-template.git --yes
 ```
 
-更新只操作框架路径，保留个人数据、归档、个人规则和写入日志；完成后不会自动提交或推送。
+更新只操作框架路径，保留个人数据、归档、个人规则和写入日志；受保护目录中的 README、INDEX 和 TASKS 入口仅在缺失时补充，绝不覆盖同名文件。完成后不会自动提交或推送。更新意外中断时，最新更新器可以在严格检查仅有框架差异后续跑。
 ## Obsidian
 
 安装 Obsidian 后，选择本仓库的本地目录作为 Vault，打开 `Home.md`。

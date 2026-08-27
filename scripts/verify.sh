@@ -42,8 +42,11 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
   for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified'; do
     grep -Fq "$marker" "$root/integrations/codex/work-knowledge/references/ingest.md" || { echo "Codex 写入规则缺少模板契约：$marker" >&2; exit 1; }
   done
-  for marker in 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md' 'temporary authority' 'preserve their union' 'Never use an old updater'; do
+  for marker in 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md' 'temporary authority' 'preserve their union' 'Never use an old updater' 'no staged changes' 'framework allowlist'; do
     grep -Fq "$marker" "$root/integrations/codex/work-knowledge/references/update.md" || { echo "Codex 更新规则缺少跨版本契约：$marker" >&2; exit 1; }
+  done
+  for marker in 'resume-framework-update' 'Knowledge/INDEX.md' '续跑检查通过'; do
+    grep -Fq "$marker" "$root/scripts/update-framework.sh" || { echo "Bash 更新器缺少兼容迁移契约：$marker" >&2; exit 1; }
   done
 fi
 echo "知识库框架检查通过：$root"
