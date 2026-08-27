@@ -31,6 +31,11 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
   echo "模板仓库缺少 UPDATE.md" >&2
   exit 1
 fi
+if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "template" ]]; then
+  for marker in '.kb-version' '当前框架版本' '模板最新版本' '更新状态'; do
+    grep -Fq "$marker" "$root/BOOTSTRAP.md" || { echo "BOOTSTRAP.md 缺少版本报告要求：$marker" >&2; exit 1; }
+  done
+fi
 echo "知识库框架检查通过：$root"
 if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "personal" ]]; then
   home="${CODEX_HOME:-$HOME/.codex}"

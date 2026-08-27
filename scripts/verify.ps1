@@ -8,7 +8,11 @@ if (Test-Path -LiteralPath (Join-Path $root 'skills')) { throw '发现旧的通�
 $writeTest = Join-Path $root ('.kb-write-test-' + [guid]::NewGuid().ToString('N'))
 try { [IO.File]::WriteAllText($writeTest,'ok',(New-Object System.Text.UTF8Encoding($false))) } finally { if (Test-Path -LiteralPath $writeTest) { Remove-Item -LiteralPath $writeTest -Force } }
 $repoRole = if (Test-Path -LiteralPath (Join-Path $root '.kb-role')) { (Get-Content -Raw -LiteralPath (Join-Path $root '.kb-role')).Trim() } else { '' }
-if ($repoRole -eq 'template' -and -not (Test-Path -LiteralPath (Join-Path $root 'UPDATE.md') -PathType Leaf)) { throw '模板仓库缺少 UPDATE.md' }
+if ($repoRole -eq 'template') {
+  if (-not (Test-Path -LiteralPath (Join-Path $root 'UPDATE.md') -PathType Leaf)) { throw '模板仓库缺少 UPDATE.md' }
+  $bootstrap = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'BOOTSTRAP.md')
+  foreach ($marker in @('.kb-version','当前框架版本','模板最新版本','更新状态')) { if (-not $bootstrap.Contains($marker)) { throw "BOOTSTRAP.md 缺少版本报告要求：$marker" } }
+}
 $roleFile = Join-Path $root '.kb-role'
 if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -LiteralPath $roleFile).Trim() -eq 'personal')) {
   $configuredHome = $CodexHome
