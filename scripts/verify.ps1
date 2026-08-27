@@ -12,6 +12,10 @@ if ($repoRole -eq 'template') {
   if (-not (Test-Path -LiteralPath (Join-Path $root 'UPDATE.md') -PathType Leaf)) { throw '模板仓库缺少 UPDATE.md' }
   $bootstrap = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'BOOTSTRAP.md')
   foreach ($marker in @('.kb-version','当前框架版本','模板最新版本','更新状态')) { if (-not $bootstrap.Contains($marker)) { throw "BOOTSTRAP.md 缺少版本报告要求：$marker" } }
+  $queryRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'integrations\codex\work-knowledge\references\query.md')
+  foreach ($marker in @('Recursively enumerate','.kb-version','raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version','Do not inspect only the first directory level')) { if (-not $queryRules.Contains($marker)) { throw "Codex 查询规则缺少概览契约：$marker" } }
+  $ingestRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'integrations\codex\work-knowledge\references\ingest.md')
+  foreach ($marker in @('Templates/','complete frontmatter','confidence: unverified')) { if (-not $ingestRules.Contains($marker)) { throw "Codex 写入规则缺少模板契约：$marker" } }
 }
 $roleFile = Join-Path $root '.kb-role'
 if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -LiteralPath $roleFile).Trim() -eq 'personal')) {

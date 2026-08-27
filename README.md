@@ -52,6 +52,8 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 初始化完成后，Codex Skill 会安装到当前用户的 Codex Skills 目录。Windows 使用 `scripts/install-codex-skill.ps1` 和 `scripts/verify.ps1`；macOS/Linux 使用对应的 `.sh` 脚本。新会话可以直接要求记录、整理或查询知识库，无需重复提供本地路径。
 
 初始化完成报告会同时显示私人仓库当前框架版本和模板最新版本。存在可选更新时，Agent 会给出一句可直接复制的更新指令，但不会自动更新，也不会把旧版本视为初始化失败。
+
+在新会话中要求“看下我的知识库”或“知识库状态”时，Codex 会递归盘点嵌套笔记，并再次显示当前版本、模板最新版本和可选更新提示；具体知识问题不会反复显示升级提示。
 ## 公司电脑无法 push 时
 
 使用 `scripts/kb-transfer.py` 在两台设备间生成和导入加密增量包。详细流程见 `AI/离线同步.md`。该工具只传输个人数据目录，不传输整个仓库；双方分叉时不会覆盖，而会生成冲突报告供用户确认。

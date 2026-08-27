@@ -35,6 +35,12 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
   for marker in '.kb-version' '当前框架版本' '模板最新版本' '更新状态'; do
     grep -Fq "$marker" "$root/BOOTSTRAP.md" || { echo "BOOTSTRAP.md 缺少版本报告要求：$marker" >&2; exit 1; }
   done
+  for marker in 'Recursively enumerate' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level'; do
+    grep -Fq "$marker" "$root/integrations/codex/work-knowledge/references/query.md" || { echo "Codex 查询规则缺少概览契约：$marker" >&2; exit 1; }
+  done
+  for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified'; do
+    grep -Fq "$marker" "$root/integrations/codex/work-knowledge/references/ingest.md" || { echo "Codex 写入规则缺少模板契约：$marker" >&2; exit 1; }
+  done
 fi
 echo "知识库框架检查通过：$root"
 if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "personal" ]]; then
