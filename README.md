@@ -1,4 +1,4 @@
-[![Framework v0.7.11](https://img.shields.io/badge/framework-v0.7.11-2563eb?style=for-the-badge)](.kb-version)
+[![Framework v0.7.12](https://img.shields.io/badge/framework-v0.7.12-2563eb?style=for-the-badge)](.kb-version)
 
 <div align="center">
 
@@ -8,11 +8,10 @@
 
 [![Local First](https://img.shields.io/badge/storage-local--first-16a34a?style=flat-square)](#安全与数据边界)
 [![Format](https://img.shields.io/badge/content-Markdown-475569?style=flat-square)](#知识库结构)
-[![Agents](https://img.shields.io/badge/agents-Codex%20%7C%20BlueCode%20%7C%20vBuddy-7c3aed?style=flat-square)](#agent-兼容)
 
-本地优先 · Git 版本化 · Obsidian 浏览 · 多 Agent 读写
+本地优先 · Git 版本化 · Obsidian 浏览 · AI 辅助读写
 
-[快速开始](#-一句话创建或接入) · [工作流程](#-工作流程) · [Agent 兼容](#-agent-兼容) · [安全边界](#-安全与数据边界) · [框架更新](#-更新框架)
+[快速开始](#-一句话创建或接入) · [工作流程](#-工作流程) · [知识库结构](#knowledge-structure) · [安全边界](#-安全与数据边界) · [框架更新](#-更新框架)
 
 </div>
 
@@ -74,15 +73,7 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 
 `BOOTSTRAP.md` 只负责创建、克隆和首次接入。完成后控制权立即移交给私人仓库，日常操作只遵循私人仓库自己的规则。模板更新不会被偷偷绑定到初始化流程。
 
-## 🤖 Agent 兼容
-
-| Agent | Windows 验证 | macOS/Linux 验证 | Skill 更新后生效方式 |
-| --- | --- | --- | --- |
-| Codex | `scripts/verify.ps1 -Agent Codex` | `scripts/verify.sh --agent codex` | 新会话使用新 Skill |
-| BlueCode | `scripts/verify.ps1 -Agent BlueCode` | `scripts/verify.sh --agent bluecode` | 重启 BlueCode 进程 |
-| vBuddy | `scripts/verify.ps1 -Agent Vbuddy` | `scripts/verify.sh --agent vbuddy` | 新开一个会话 |
-
-三种接入彼此隔离：只验证当前 Agent，不会因为其他 Agent 未安装而失败。仓库中的集成文件位于 `integrations/<agent>/work-knowledge/`，它们是各 Agent 的专用实现，不应被描述为通用 Skill。
+<a id="knowledge-structure"></a>
 
 ## 🗂️ 知识库结构
 
@@ -96,7 +87,7 @@ work-knowledge/
 ├─ Attachments/     图片、文档等附件（个人仓库中使用）
 ├─ Templates/       知识、项目、问题解决和日常记录模板
 ├─ AI/              Agent 规则、个人覆盖层和写入日志
-├─ integrations/    Codex、BlueCode、vBuddy 专用 Skill
+├─ integrations/    AI 工具接入文件
 └─ scripts/         安装、验证、索引、巡检、更新和传输工具
 ```
 
@@ -157,13 +148,12 @@ python scripts/kb-index.py
 | [`AI/启动配置.md`](AI/启动配置.md) | 各 Agent 的安装、验证和降级规则 |
 | [`AI/AI-GUIDE.md`](AI/AI-GUIDE.md) | 检索、写入、确认和安全约束 |
 | [`AI/知识维护.md`](AI/知识维护.md) | 索引、复核、归档和长期巡检规则 |
-| [`integrations/ADDING-AGENT.md`](integrations/ADDING-AGENT.md) | 新增 Agent 专用接入时的完整检查清单 |
 
 ---
 
 <div align="center">
 
-当前框架版本：**0.7.11**
+当前框架版本：**0.7.12**
 
 模板负责提供能力，私人仓库始终由用户自己控制。
 
