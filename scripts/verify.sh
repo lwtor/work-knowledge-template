@@ -55,14 +55,19 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
   for marker in '.kb-version' '当前框架版本' '模板最新版本' '更新状态'; do
     grep -Fq "$marker" "$root/BOOTSTRAP.md" || { echo "BOOTSTRAP.md 缺少版本报告要求：$marker" >&2; exit 1; }
   done
-  for marker in 'Recursively enumerate' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level'; do
-    grep -Fq "$marker" "$root/integrations/codex/work-knowledge/references/query.md" || { echo "Codex 查询规则缺少概览契约：$marker" >&2; exit 1; }
-  done
-  for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified'; do
-    grep -Fq "$marker" "$root/integrations/codex/work-knowledge/references/ingest.md" || { echo "Codex 写入规则缺少模板契约：$marker" >&2; exit 1; }
-  done
-  for marker in 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md' 'temporary authority' 'preserve their union' 'Never use an old updater' 'no staged changes' 'framework allowlist'; do
-    grep -Fq "$marker" "$root/integrations/codex/work-knowledge/references/update.md" || { echo "Codex 更新规则缺少跨版本契约：$marker" >&2; exit 1; }
+  for agent_name in codex bluecode vbuddy; do
+    for marker in 'name: work-knowledge' 'description:' 'references/ingest.md' 'references/query.md' 'references/project.md' 'references/maintenance.md' 'references/update.md'; do
+      grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/SKILL.md" || { echo "$agent_name Skill 入口缺少契约：$marker" >&2; exit 1; }
+    done
+    for marker in 'Recursively enumerate' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level'; do
+      grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/query.md" || { echo "$agent_name 查询规则缺少概览契约：$marker" >&2; exit 1; }
+    done
+    for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified'; do
+      grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/ingest.md" || { echo "$agent_name 写入规则缺少模板契约：$marker" >&2; exit 1; }
+    done
+    for marker in 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md' 'temporary authority' 'preserve their union' 'Never use an old updater' 'no staged changes' 'framework allowlist'; do
+      grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/update.md" || { echo "$agent_name 更新规则缺少跨版本契约：$marker" >&2; exit 1; }
+    done
   done
   for marker in 'resume-framework-update' 'Knowledge/INDEX.md' '续跑检查通过'; do
     grep -Fq "$marker" "$root/scripts/update-framework.sh" || { echo "Bash 更新器缺少兼容迁移契约：$marker" >&2; exit 1; }

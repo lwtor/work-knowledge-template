@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 用法：
-  ./scripts/setup.sh /path/to/local-knowledge-base [codex|bluecode|vbuddy|both]
+  ./scripts/setup.sh /path/to/local-knowledge-base [codex|bluecode|vbuddy|both|all]
 
 说明：
   手动将已克隆的模板复制到新的最终知识库目录。
@@ -21,7 +21,7 @@ fi
 source_dir="$(cd "$(dirname "$0")/.." && pwd)"
 target_dir="$1"
 agent="${2:-codex}"
-case "$agent" in codex|bluecode|vbuddy|both) ;; *) echo "错误：Agent 必须是 codex、bluecode、vbuddy 或 both。" >&2; exit 1 ;; esac
+case "$agent" in codex|bluecode|vbuddy|both|all) ;; *) echo "错误：Agent 必须是 codex、bluecode、vbuddy、both 或 all。" >&2; exit 1 ;; esac
 
 if [[ -e "$target_dir" && ! -d "$target_dir" ]]; then
   echo "错误：目标路径不是目录：$target_dir" >&2
@@ -52,9 +52,9 @@ if [[ -f "$target_dir/.kb-role" ]]; then
   printf 'personal\n' > "$target_dir/.kb-role"
 fi
 
-[[ "$agent" == "bluecode" || "$agent" == "vbuddy" ]] || bash "$target_dir/scripts/install-codex-skill.sh" "$target_dir"
-[[ "$agent" == "codex" || "$agent" == "vbuddy" ]] || bash "$target_dir/scripts/install-bluecode-skill.sh" "$target_dir"
-[[ "$agent" == "codex" || "$agent" == "bluecode" ]] || bash "$target_dir/scripts/install-vbuddy-skill.sh" "$target_dir"
+if [[ "$agent" == "codex" || "$agent" == "both" || "$agent" == "all" ]]; then bash "$target_dir/scripts/install-codex-skill.sh" "$target_dir"; fi
+if [[ "$agent" == "bluecode" || "$agent" == "both" || "$agent" == "all" ]]; then bash "$target_dir/scripts/install-bluecode-skill.sh" "$target_dir"; fi
+if [[ "$agent" == "vbuddy" || "$agent" == "all" ]]; then bash "$target_dir/scripts/install-vbuddy-skill.sh" "$target_dir"; fi
 
 cat <<EOF
 知识库模板初始化完成。
