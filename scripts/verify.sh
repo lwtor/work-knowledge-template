@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 agent="codex"
-if [[ "${1:-}" == "--agent" ]]; then [[ $# -eq 2 ]] || { echo "用法：$0 [--agent codex|bluecode|all|framework]" >&2; exit 1; }; agent="$2"; fi
-case "$agent" in codex|bluecode|all|framework) ;; *) echo "未知 Agent：$agent" >&2; exit 1 ;; esac
+if [[ "${1:-}" == "--agent" ]]; then [[ $# -eq 2 ]] || { echo "用法：$0 [--agent codex|bluecode|vbuddy|all|framework]" >&2; exit 1; }; agent="$2"; fi
+case "$agent" in codex|bluecode|vbuddy|all|framework) ;; *) echo "未知 Agent：$agent" >&2; exit 1 ;; esac
 root="$(cd "$(dirname "$0")/.." && pwd)"
 required=(
   "README.md" "Home.md" "AGENTS.md"
@@ -14,6 +14,8 @@ required=(
   "scripts/install-codex-skill.sh"
   "scripts/install-bluecode-skill.ps1"
   "scripts/install-bluecode-skill.sh"
+  "scripts/install-vbuddy-skill.ps1"
+  "scripts/install-vbuddy-skill.sh"
   "scripts/verify.ps1"
   "scripts/update-framework.ps1"
   "scripts/kb_common.py" "scripts/kb-index.py" "scripts/kb-lint.py" "scripts/kb-secret-scan.py"
@@ -30,11 +32,17 @@ required=(
   "integrations/bluecode/work-knowledge/references/project.md"
   "integrations/bluecode/work-knowledge/references/maintenance.md"
   "integrations/bluecode/work-knowledge/references/update.md"
+  "integrations/vbuddy/work-knowledge/SKILL.md"
+  "integrations/vbuddy/work-knowledge/references/ingest.md"
+  "integrations/vbuddy/work-knowledge/references/query.md"
+  "integrations/vbuddy/work-knowledge/references/project.md"
+  "integrations/vbuddy/work-knowledge/references/maintenance.md"
+  "integrations/vbuddy/work-knowledge/references/update.md"
   ".gitignore" ".gitattributes"
 )
 [[ -f "$root/BOOTSTRAP.md" || -f "$root/.kb-role" ]] || { echo "缺少 BOOTSTRAP.md 或 .kb-role" >&2; exit 1; }
 for path in "${required[@]}"; do [[ -f "$root/$path" ]] || { echo "缺少文件：$path" >&2; exit 1; }; done
-[[ ! -e "$root/skills" ]] || { echo "发现旧的通用 skills/ 目录；当前只支持 integrations/codex 与 integrations/bluecode。" >&2; exit 1; }
+[[ ! -e "$root/skills" ]] || { echo "发现旧的通用 skills/ 目录；当前只支持 integrations/codex、integrations/bluecode 与 integrations/vbuddy。" >&2; exit 1; }
 if rg -n '小V Copilot|发送按钮|WebSocket|示例-Git|code_analysis|xiaoV' "$root/Knowledge" "$root/Projects" --glob '*.md' >/dev/null 2>&1; then
   echo "发现不应出现在空白模板中的业务或示例资料。" >&2
   exit 1
@@ -62,13 +70,13 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
 fi
 echo "知识库框架检查通过：$root"
 if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "personal" ]]; then
+ command -v cygpath >/dev/null 2>&1 && expected="$(cygpath -w "$root")" || expected="$root"
  if [[ "$agent" == "codex" || "$agent" == "all" ]]; then
   home="${CODEX_HOME:-$HOME/.codex}"
   command -v cygpath >/dev/null 2>&1 && home="$(cygpath -u "$home")"
   skill="$home/skills/work-knowledge/SKILL.md"
   marker="$home/skills/work-knowledge/.managed-by-work-knowledge-template"
   [[ -f "$skill" && -f "$marker" ]] || { echo "缺少 Codex skill；请执行 ./scripts/install-codex-skill.sh" >&2; exit 1; }
-  command -v cygpath >/dev/null 2>&1 && expected="$(cygpath -w "$root")" || expected="$root"
   grep -Fq "knowledge_base=$expected" "$marker" || { echo "Codex skill 路径不匹配；请重新安装" >&2; exit 1; }
   echo "Codex 全局知识库 skill 检查通过：$skill"
  fi
@@ -84,6 +92,20 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "pers
     echo "BlueCode 全局知识库 skill 检查通过：$bdir/SKILL.md"
   else
     echo "缺少 BlueCode skill；请执行 ./scripts/install-bluecode-skill.sh" >&2; exit 1
+  fi
+ fi
+ if [[ "$agent" == "vbuddy" || "$agent" == "all" ]]; then
+  vhome="${VBUDDY_HOME:-$HOME/.vbuddy}"
+  command -v cygpath >/dev/null 2>&1 && vhome="$(cygpath -u "$vhome")"
+  vdir="$vhome/skills/work-knowledge"
+  vmarker="$vdir/.managed-by-work-knowledge-template"
+  if [[ -e "$vdir" ]]; then
+    [[ -f "$vdir/SKILL.md" && -f "$vmarker" ]] || { echo "存在非模板管理的 vBuddy skill：$vdir" >&2; exit 1; }
+    grep -Fq "knowledge_base=$expected" "$vmarker" || { echo "vBuddy skill 路径不匹配；请重新安装" >&2; exit 1; }
+    for relative in SKILL.md references/ingest.md references/query.md references/project.md references/maintenance.md references/update.md; do cmp -s "$root/integrations/vbuddy/work-knowledge/$relative" "$vdir/$relative" || { echo "vBuddy skill 与仓库版本不一致：$relative" >&2; exit 1; }; done
+    echo "vBuddy 全局知识库 skill 检查通过：$vdir/SKILL.md"
+  else
+    echo "缺少 vBuddy skill；请执行 ./scripts/install-vbuddy-skill.sh" >&2; exit 1
   fi
  fi
 fi

@@ -47,11 +47,11 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 ```
 
 
-## Codex / BlueCode 接入
+## Codex / BlueCode / vBuddy 接入
 
-初始化完成后，当前 Agent 对应的 Skill 会安装到其全局 Skills 目录。Windows 验证时使用 `scripts/verify.ps1 -Agent Codex` 或 `-Agent BlueCode`；macOS/Linux 使用 `scripts/verify.sh --agent codex` 或 `--agent bluecode`，不会要求安装另一种 Agent。新会话可以直接要求记录、整理或查询知识库，无需重复提供本地路径。
+初始化完成后，当前 Agent 对应的 Skill 会安装到其全局 Skills 目录。Windows 验证时使用 `scripts/verify.ps1 -Agent Codex`、`-Agent BlueCode` 或 `-Agent Vbuddy`；macOS/Linux 使用 `scripts/verify.sh --agent codex`、`--agent bluecode` 或 `--agent vbuddy`，不会要求安装另一种 Agent。新会话可以直接要求记录、整理或查询知识库，无需重复提供本地路径。
 
-BlueCode 在进程启动时加载一次全局 Skill；安装或更新 BlueCode Skill 后，需要重启 BlueCode 才会识别。
+BlueCode 在进程启动时加载一次全局 Skill；安装或更新 BlueCode Skill 后，需要重启 BlueCode 才会识别。vBuddy 在每个会话启动时加载全局 Skill；安装或更新 vBuddy Skill 后，新开一个会话即可生效，无需重启进程。
 
 初始化完成报告会同时显示私人仓库当前框架版本和模板最新版本。存在可选更新时，Agent 会给出一句可直接复制的更新指令，但不会自动更新，也不会把旧版本视为初始化失败。
 
