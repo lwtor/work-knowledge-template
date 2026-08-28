@@ -39,7 +39,7 @@
 
 ### 6. 版本号 `.kb-version`
 
-**任何改动一律 bump 版本号**，不犹豫、不攒批。commit message 按惯例：`feat: add <Agent> global skill integration` / `fix: cover <Agent> in ...`。
+**任何改动一律 bump 版本号**，不犹豫、不攒批，并同步更新 README 顶部徽章和页尾版本。commit message 按惯例：`feat: add <Agent> global skill integration` / `fix: cover <Agent> in ...`。
 
 ## 文件编码规范（Windows 上必踩，已实证）
 

@@ -55,6 +55,10 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
   for marker in '.kb-version' '当前框架版本' '模板最新版本' '更新状态'; do
     grep -Fq "$marker" "$root/BOOTSTRAP.md" || { echo "BOOTSTRAP.md 缺少版本报告要求：$marker" >&2; exit 1; }
   done
+  framework_version="$(tr -d '\r\n' < "$root/.kb-version")"
+  for marker in "framework-v$framework_version" "当前框架版本：**$framework_version**"; do
+    grep -Fq "$marker" "$root/README.md" || { echo "README.md 显示版本与 .kb-version 不一致：$marker" >&2; exit 1; }
+  done
   for agent_name in codex bluecode vbuddy; do
     for marker in 'name: work-knowledge' 'description:' 'references/ingest.md' 'references/query.md' 'references/project.md' 'references/maintenance.md' 'references/update.md'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/SKILL.md" || { echo "$agent_name Skill 入口缺少契约：$marker" >&2; exit 1; }

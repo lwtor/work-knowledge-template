@@ -12,6 +12,9 @@ if ($repoRole -eq 'template') {
   if (-not (Test-Path -LiteralPath (Join-Path $root 'UPDATE.md') -PathType Leaf)) { throw '模板仓库缺少 UPDATE.md' }
   $bootstrap = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'BOOTSTRAP.md')
   foreach ($marker in @('.kb-version','当前框架版本','模板最新版本','更新状态')) { if (-not $bootstrap.Contains($marker)) { throw "BOOTSTRAP.md 缺少版本报告要求：$marker" } }
+  $frameworkVersion = (Get-Content -Raw -LiteralPath (Join-Path $root '.kb-version')).Trim()
+  $readme = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root 'README.md')
+  foreach ($marker in @("framework-v$frameworkVersion","当前框架版本：**$frameworkVersion**")) { if (-not $readme.Contains($marker)) { throw "README.md 显示版本与 .kb-version 不一致：$marker" } }
   foreach ($agentName in @('codex','bluecode','vbuddy')) {
     $skillRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root "integrations\$agentName\work-knowledge\SKILL.md")
     foreach ($marker in @('name: work-knowledge','description:','references/ingest.md','references/query.md','references/project.md','references/maintenance.md','references/update.md')) { if (-not $skillRules.Contains($marker)) { throw "$agentName Skill 入口缺少契约：$marker" } }
