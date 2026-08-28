@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 用法：
-  ./scripts/setup.sh /path/to/local-knowledge-base [codex|bluecode|both]
+  ./scripts/setup.sh /path/to/local-knowledge-base [codex|bluecode|vbuddy|both]
 
 说明：
   手动将已克隆的模板复制到新的最终知识库目录。
@@ -21,7 +21,7 @@ fi
 source_dir="$(cd "$(dirname "$0")/.." && pwd)"
 target_dir="$1"
 agent="${2:-codex}"
-case "$agent" in codex|bluecode|both) ;; *) echo "错误：Agent 必须是 codex、bluecode 或 both。" >&2; exit 1 ;; esac
+case "$agent" in codex|bluecode|vbuddy|both) ;; *) echo "错误：Agent 必须是 codex、bluecode、vbuddy 或 both。" >&2; exit 1 ;; esac
 
 if [[ -e "$target_dir" && ! -d "$target_dir" ]]; then
   echo "错误：目标路径不是目录：$target_dir" >&2
@@ -52,8 +52,9 @@ if [[ -f "$target_dir/.kb-role" ]]; then
   printf 'personal\n' > "$target_dir/.kb-role"
 fi
 
-[[ "$agent" == "bluecode" ]] || bash "$target_dir/scripts/install-codex-skill.sh" "$target_dir"
-[[ "$agent" == "codex" ]] || bash "$target_dir/scripts/install-bluecode-skill.sh" "$target_dir"
+[[ "$agent" == "bluecode" || "$agent" == "vbuddy" ]] || bash "$target_dir/scripts/install-codex-skill.sh" "$target_dir"
+[[ "$agent" == "codex" || "$agent" == "vbuddy" ]] || bash "$target_dir/scripts/install-bluecode-skill.sh" "$target_dir"
+[[ "$agent" == "codex" || "$agent" == "bluecode" ]] || bash "$target_dir/scripts/install-vbuddy-skill.sh" "$target_dir"
 
 cat <<EOF
 知识库模板初始化完成。
@@ -63,6 +64,6 @@ cat <<EOF
 
 下一步：
 1. 用 Obsidian 打开这个目录；
-2. 重启已安装 Skill 的 Agent（BlueCode 必须重启进程）；
+2. 重启已安装 Skill 的 Agent（BlueCode 必须重启进程；vBuddy 新开一个会话即可）；
 3. 新建对应 Agent 会话，直接说“把刚刚的对话总结到知识库”。
 EOF
