@@ -1,6 +1,6 @@
 ---
 name: work-knowledge
-description: Use this Codex integration to record, summarize, organize, retrieve, search, or update the user's existing personal work knowledge base. Do not use its stored path for bootstrap, create, initialize, install, clone, or connect requests; those follow BOOTSTRAP.md and the current request.
+description: Use this Codex integration to record, summarize, organize, retrieve, search, inspect status, or update the user's existing personal work knowledge base, including requests such as “知识库状态”. Do not use its stored path for bootstrap, create, initialize, install, clone, or connect requests; those follow BOOTSTRAP.md and the current request.
 ---
 
 # Codex Work Knowledge

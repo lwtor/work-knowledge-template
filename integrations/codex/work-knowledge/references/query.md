@@ -11,17 +11,19 @@ If no reliable record exists, say so instead of inventing historical facts.
 
 ## Knowledge-base overview or status
 
-Use this mode when the user asks to view, inspect, summarize, inventory, or check the status of the knowledge base itself, for example “看下我的知识库”, “知识库里有什么”, or “知识库状态”. Do not use it for an ordinary targeted knowledge question.
+Use this mode when the user says “查看知识库状态”, “知识库状态”, “检查知识库”, “看下我的知识库”, or otherwise asks to inspect the knowledge base itself. Treat “查看知识库状态” as the canonical copyable command. Do not use it for an ordinary targeted knowledge question.
 
 1. Recursively enumerate real files under `Knowledge/`, `Projects/`, `Inbox/`, `Daily/`, and `Archive/`. Do not inspect only the first directory level, and do not call the vault empty merely because its indexes or top-level README files are empty.
 2. Treat README files, generated `INDEX.md`, `TASKS.md`, and `.gitkeep` as structure rather than user knowledge. Count and list substantive notes separately, including nested paths such as `Knowledge/Git/example.md`.
 3. Read the titles and relevant frontmatter or headings of substantive notes before summarizing them. If a note exists but is unverified, report it as unverified rather than omitting it.
-4. Read the personal repository root `.kb-version` as the current framework version. For this overview/status report only, read the latest version from `https://raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version`; do not read or copy other template files.
-5. Report these fields: knowledge-base path, substantive content summary, current framework version, latest template version, and update status.
-6. If the latest version is newer, state that the current version remains usable and show this optional command once:
+4. Inspect repository state without changing it: current branch, tracking branch, staged/unstaged/untracked paths, and local ahead/behind counts when already available. Do not fetch, commit, pull, push, or clean merely to produce status.
+5. Summarize knowledge health: substantive note counts by area, Inbox backlog, unverified or review-due notes, generated-index presence, and lint warnings when the repository's read-only lint tool is available. Do not repair findings in status mode.
+6. Read the personal repository root `.kb-version` as the current framework version. For this status report only, read the latest version from `https://raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version`; do not read or copy other template files.
+7. Report four compact sections: content, health, Git, and framework version. End with only the actions that actually apply: organize backlog, review knowledge, preview a local commit, push local commits, or update the framework. Each action remains optional and separately authorized.
+8. If the latest version is newer, state that the current version remains usable and show this optional command once:
 
 ```text
 请读取 https://raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md，并严格按照其中最新协议把我的私人知识库框架更新到模板最新版本。更新前先展示版本变化、更新范围、受保护的个人数据和备份位置，等我确认后再执行；不要自动提交或推送。
 ```
 
-7. If the latest version cannot be read, report it as unavailable; do not guess. Never update, commit, or push from an overview request.
+9. If the latest version cannot be read, report it as unavailable; do not guess. Never modify notes, rebuild indexes, update, commit, pull, or push from a status request.

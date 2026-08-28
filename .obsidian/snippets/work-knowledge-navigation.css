@@ -1,0 +1,14 @@
+/* Work Knowledge: keep the everyday sidebar focused on personal content.
+   Disable this snippet in Settings > Appearance > CSS snippets to show everything. */
+.nav-folder:has(> .nav-folder-title[data-path="AI"]),
+.nav-folder:has(> .nav-folder-title[data-path="integrations"]),
+.nav-folder:has(> .nav-folder-title[data-path="scripts"]),
+.nav-folder:has(> .nav-folder-title[data-path="Templates"]),
+.nav-file:has(> .nav-file-title[data-path="AGENTS.md"]),
+.nav-file:has(> .nav-file-title[data-path="README.md"]) {
+  display: none;
+}
+
+.workspace-leaf-content[data-type="markdown"] .view-content {
+  --file-line-width: 860px;
+}

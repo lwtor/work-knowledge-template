@@ -38,6 +38,7 @@ required=(
   "integrations/vbuddy/work-knowledge/references/project.md"
   "integrations/vbuddy/work-knowledge/references/maintenance.md"
   "integrations/vbuddy/work-knowledge/references/update.md"
+  ".obsidian/appearance.json" ".obsidian/app.json" ".obsidian/snippets/work-knowledge-navigation.css"
   ".gitignore" ".gitattributes"
 )
 [[ -f "$root/BOOTSTRAP.md" || -f "$root/.kb-role" ]] || { echo "缺少 BOOTSTRAP.md 或 .kb-role" >&2; exit 1; }
@@ -59,21 +60,24 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
   for marker in "framework-v$framework_version" "当前框架版本：**$framework_version**"; do
     grep -Fq "$marker" "$root/README.md" || { echo "README.md 显示版本与 .kb-version 不一致：$marker" >&2; exit 1; }
   done
+  for marker in '查看知识库状态' '我现在该去哪里' 'work-knowledge-navigation'; do
+    grep -Fq "$marker" "$root/Home.md" || { echo "Home.md 缺少日常入口：$marker" >&2; exit 1; }
+  done
   for agent_name in codex bluecode vbuddy; do
     for marker in 'name: work-knowledge' 'description:' 'references/ingest.md' 'references/query.md' 'references/project.md' 'references/maintenance.md' 'references/update.md'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/SKILL.md" || { echo "$agent_name Skill 入口缺少契约：$marker" >&2; exit 1; }
     done
-    for marker in 'Recursively enumerate' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level'; do
-      grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/query.md" || { echo "$agent_name 查询规则缺少概览契约：$marker" >&2; exit 1; }
+    for marker in 'Recursively enumerate' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level' 'current branch' 'knowledge health' '查看知识库状态'; do
+      grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/query.md" || { echo "$agent_name 查询规则缺少状态契约：$marker" >&2; exit 1; }
     done
-    for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified'; do
-      grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/ingest.md" || { echo "$agent_name 写入规则缺少模板契约：$marker" >&2; exit 1; }
+    for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified' 'existing Git working-tree changes' '创建本地 Git 提交' 'separate explicit authorization'; do
+      grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/ingest.md" || { echo "$agent_name 写入规则缺少收尾契约：$marker" >&2; exit 1; }
     done
     for marker in 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md' 'temporary authority' 'preserve their union' 'Never use an old updater' 'no staged changes' 'framework allowlist'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/update.md" || { echo "$agent_name 更新规则缺少跨版本契约：$marker" >&2; exit 1; }
     done
   done
-  for marker in 'resume-framework-update' 'Knowledge/INDEX.md' '续跑检查通过'; do
+  for marker in 'resume-framework-update' 'Knowledge/INDEX.md' '续跑检查通过' 'work-knowledge-navigation' '已保留现有 Obsidian 外观设置'; do
     grep -Fq "$marker" "$root/scripts/update-framework.sh" || { echo "Bash 更新器缺少兼容迁移契约：$marker" >&2; exit 1; }
   done
 fi

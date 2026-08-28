@@ -25,7 +25,7 @@ try {
             git -c core.quotepath=false -C $target diff --name-only
             git -c core.quotepath=false -C $target ls-files --others --exclude-standard
         ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique
-        $rootFiles = @('README.md','AGENTS.md','Home.md','.gitignore','.gitattributes','.kb-version')
+        $rootFiles = @('README.md','AGENTS.md','Home.md','.gitignore','.gitattributes','.kb-version','.obsidian/appearance.json','.obsidian/app.json','.obsidian/snippets/work-knowledge-navigation.css')
         foreach ($item in $changed) {
             $path = $item.Replace('\','/')
             $allowed = $rootFiles -contains $path -or $path.StartsWith('Templates/') -or $path.StartsWith('scripts/') -or $path.StartsWith('integrations/') -or $path.StartsWith('AI/')
@@ -41,10 +41,13 @@ try {
     $framework = @('README.md','AGENTS.md','Home.md','AI','Templates','scripts','integrations','.gitignore','.gitattributes','.kb-version')
     $additive = @('Archive\README.md','Knowledge\README.md','Knowledge\INDEX.md','Projects\README.md','Projects\INDEX.md','Projects\TASKS.md','Inbox\README.md','Daily\README.md')
     $protected = @('Knowledge','Projects','Daily','Inbox','Attachments','Archive','AI\LOCAL.md','AI\写入日志.md','AI\写入日志','.kb-role')
+    $obsidianSourceFiles = @('.obsidian\appearance.json','.obsidian\app.json','.obsidian\snippets\work-knowledge-navigation.css')
+    foreach ($relative in $obsidianSourceFiles) { if (-not (Test-Path -LiteralPath (Join-Path $sourceRoot $relative) -PathType Leaf)) { throw "模板缺少 Obsidian 配置：$relative" } }
     Write-Host "框架版本：$targetVersion -> $sourceVersion"
     Write-Host ('将更新：' + ($framework -join ', '))
     Write-Host ('将保护：' + ($protected -join ', '))
     Write-Host ('仅缺失时补充且绝不覆盖：' + ($additive -join ', '))
+    Write-Host 'Obsidian：更新模板侧栏 CSS；appearance.json 和 app.json 仅在缺失或空配置时补充。'
     if (-not $Confirm) { throw '尚未确认。检查以上范围后使用 -Confirm 执行。' }
     $backup = Join-Path $target ('.kb-backups\framework-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
     New-Item -ItemType Directory -Force -Path $backup | Out-Null
@@ -88,6 +91,25 @@ try {
             Copy-Item -LiteralPath $incoming -Destination $destination -Force
         }
     }
+    foreach ($relative in $obsidianSourceFiles) {
+        $current = Join-Path $target $relative
+        if (Test-Path -LiteralPath $current -PathType Leaf) {
+            $saved = Join-Path $backup $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $saved) | Out-Null
+            Copy-Item -LiteralPath $current -Destination $saved -Force
+        }
+    }
+    $snippetTarget = Join-Path $target '.obsidian\snippets\work-knowledge-navigation.css'
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $snippetTarget) | Out-Null
+    Copy-Item -LiteralPath (Join-Path $sourceRoot '.obsidian\snippets\work-knowledge-navigation.css') -Destination $snippetTarget -Force
+    foreach ($name in @('appearance.json','app.json')) {
+        $destination = Join-Path $target ('.obsidian\' + $name)
+        $useTemplate = -not (Test-Path -LiteralPath $destination -PathType Leaf)
+        if (-not $useTemplate) { $existing = (Get-Content -Raw -LiteralPath $destination).Trim(); $useTemplate = [string]::IsNullOrWhiteSpace($existing) -or $existing -eq '{}' }
+        if ($useTemplate) { New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null; Copy-Item -LiteralPath (Join-Path $sourceRoot ('.obsidian\' + $name)) -Destination $destination -Force }
+    }
+    $appearancePath = Join-Path $target '.obsidian\appearance.json'
+    if (-not (Select-String -LiteralPath $appearancePath -SimpleMatch 'work-knowledge-navigation' -Quiet)) { Write-Host '提示：已保留现有 Obsidian 外观设置；请在“设置 → 外观 → CSS 代码片段”中启用 work-knowledge-navigation。' }
     if (Test-Path -LiteralPath $legacy) { Remove-Item -LiteralPath $legacy -Recurse -Force }
     Write-Host "框架已更新到 $sourceVersion"
     Write-Host "备份：$backup"

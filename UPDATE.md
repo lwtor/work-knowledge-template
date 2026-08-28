@@ -23,7 +23,7 @@
 ## 必须执行
 
 1. 比较个人仓库与模板的 `.kb-version`；相同或更新时报告无需更新并停止。
-2. 展示版本变化、将更新的框架路径、只在缺失时补充的入口文件、受保护目录、备份位置；当前 Agent 是 Codex、BlueCode 或 vBuddy 时，还要说明更新后会用个人仓库内的新集成重新安装对应的全局 `work-knowledge` Skill，使新会话使用新规则。
+2. 展示版本变化、将更新的框架路径、只在缺失时补充的入口文件、受保护目录、备份位置和 Obsidian 导航配置策略；当前 Agent 是 Codex、BlueCode 或 vBuddy 时，还要说明更新后会用个人仓库内的新集成重新安装对应的全局 `work-knowledge` Skill，使新会话使用新规则。Obsidian 只能覆盖模板管理的导航 CSS；已有非空 `appearance.json` 与 `app.json` 必须保留。
 3. 等待用户确认；拒绝或未确认时不修改任何文件，个人仓库继续按原版本使用。
 4. 确认后从与本文件相同的最新模板版本运行更新器：Windows 使用模板的 `scripts/update-framework.ps1` 并显式传入个人仓库路径；macOS/Linux 使用模板的 `scripts/update-framework.sh --target`。不得因为个人仓库已有旧更新器而优先运行旧文件。
 5. 更新器必须先备份旧框架，只复制允许范围，并恢复个人规则与写入日志；旧版单文件日志不得丢失。

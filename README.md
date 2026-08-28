@@ -1,4 +1,4 @@
-[![Framework v0.7.12](https://img.shields.io/badge/framework-v0.7.12-2563eb?style=for-the-badge)](.kb-version)
+[![Framework v0.7.13](https://img.shields.io/badge/framework-v0.7.13-2563eb?style=for-the-badge)](.kb-version)
 
 <div align="center">
 
@@ -54,6 +54,14 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 ```text
 看下我的知识库现在有哪些内容。
 ```
+
+日常建议使用统一状态入口：
+
+```text
+查看知识库状态。
+```
+
+它会只读检查内容、健康度、Git 状态和框架版本；发现需要提交、推送、整理、复核或升级时，只给出对应提示，不会自动执行。
 
 ## 🧭 工作流程
 
@@ -136,7 +144,7 @@ python scripts/kb-index.py
 
 ## 💎 Obsidian
 
-安装 [Obsidian](https://obsidian.md/) 后，将私人知识库的本地目录作为 Vault 打开，再进入 `Home.md`。Obsidian 是推荐浏览界面，但不是运行知识库的必要依赖；所有内容始终是普通 Markdown 文件。
+安装 [Obsidian](https://obsidian.md/) 后，将私人知识库的本地目录作为 Vault 打开，再进入 `Home.md`。模板默认启用 `work-knowledge-navigation` CSS snippet，在侧栏隐藏维护用框架目录，只保留知识、项目、Inbox、Daily 和归档等日常入口；可在“设置 → 外观 → CSS 代码片段”中随时关闭并恢复完整目录。Obsidian 是推荐浏览界面，但不是运行知识库的必要依赖；所有内容始终是普通 Markdown 文件。
 
 ## 📚 关键文档
 
@@ -153,7 +161,7 @@ python scripts/kb-index.py
 
 <div align="center">
 
-当前框架版本：**0.7.12**
+当前框架版本：**0.7.13**
 
 模板负责提供能力，私人仓库始终由用户自己控制。
 

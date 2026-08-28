@@ -23,7 +23,7 @@ script_root="$(cd "$(dirname "$0")/.." && pwd)"
 [[ -d "$root/.git" ]] || { echo "错误：目标不是 Git 仓库。" >&2; exit 1; }
 [[ -f "$root/.kb-role" && "$(tr -d '[:space:]' < "$root/.kb-role")" == "personal" ]] || { echo "错误：目标不是个人知识库。" >&2; exit 1; }
 temp_dir=""
-cleanup() { [[ -n "$temp_dir" && -d "$temp_dir" ]] && rm -rf "$temp_dir"; }
+cleanup() { if [[ -n "$temp_dir" && -d "$temp_dir" ]]; then rm -rf "$temp_dir"; fi; }
 trap cleanup EXIT
 if [[ -d "$source_ref" ]]; then source_dir="$(cd "$source_ref" && pwd)"; else
   temp_dir="$(mktemp -d /tmp/kb-template-update.XXXXXX)"
@@ -37,7 +37,7 @@ if [[ -n "$(git -C "$root" status --porcelain)" ]]; then
   while IFS= read -r path; do
     [[ -z "$path" ]] && continue
     case "$path" in
-      README.md|AGENTS.md|Home.md|.gitignore|.gitattributes|.kb-version|Templates/*|scripts/*|integrations/*|AI/*) ;;
+      README.md|AGENTS.md|Home.md|.gitignore|.gitattributes|.kb-version|Templates/*|scripts/*|integrations/*|AI/*|.obsidian/appearance.json|.obsidian/app.json|.obsidian/snippets/work-knowledge-navigation.css) ;;
       *) echo "错误：续跑已停止，发现框架白名单之外的修改：$path" >&2; exit 1 ;;
     esac
     case "$path" in
@@ -52,7 +52,9 @@ if [[ "$source_version" == "$target_version" && "$resume" != "yes" ]]; then echo
 [[ "$source_version" != "$target_version" ]] || echo "框架版本均为 $target_version；正在续跑此前中断的同版本更新。"
 framework=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "integrations" ".gitignore" ".gitattributes" ".kb-version")
 additive=("Archive/README.md" "Knowledge/README.md" "Knowledge/INDEX.md" "Projects/README.md" "Projects/INDEX.md" "Projects/TASKS.md" "Inbox/README.md" "Daily/README.md")
+obsidian_files=(".obsidian/appearance.json" ".obsidian/app.json" ".obsidian/snippets/work-knowledge-navigation.css")
 for path in "${framework[@]}"; do [[ -e "$source_dir/$path" ]] || { echo "错误：模板缺少 $path。" >&2; exit 1; }; done
+for path in "${obsidian_files[@]}"; do [[ -f "$source_dir/$path" ]] || { echo "错误：模板缺少 Obsidian 配置：$path。" >&2; exit 1; }; done
 backup="$root/.kb-backups/framework-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$backup"
 for path in "${framework[@]}"; do
@@ -74,6 +76,17 @@ for path in "${additive[@]}"; do
     cp "$source_dir/$path" "$root/$path"
   fi
 done
+for path in "${obsidian_files[@]}"; do
+  if [[ -f "$root/$path" ]]; then mkdir -p "$backup/$(dirname "$path")"; cp "$root/$path" "$backup/$path"; fi
+done
+mkdir -p "$root/.obsidian/snippets"
+cp "$source_dir/.obsidian/snippets/work-knowledge-navigation.css" "$root/.obsidian/snippets/work-knowledge-navigation.css"
+for name in appearance.json app.json; do
+  destination="$root/.obsidian/$name"
+  existing=""; [[ ! -f "$destination" ]] || existing="$(tr -d '[:space:]' < "$destination")"
+  if [[ ! -f "$destination" || -z "$existing" || "$existing" == "{}" ]]; then cp "$source_dir/.obsidian/$name" "$destination"; fi
+done
+grep -Fq 'work-knowledge-navigation' "$root/.obsidian/appearance.json" || echo '提示：已保留现有 Obsidian 外观设置；请在“设置 → 外观 → CSS 代码片段”中启用 work-knowledge-navigation。'
 [[ ! -e "$root/skills" ]] || rm -rf "$root/skills"
 echo "框架已更新：$target_version -> $source_version"
 echo "备份：$backup"
