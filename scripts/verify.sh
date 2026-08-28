@@ -73,7 +73,7 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
     for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified' 'existing Git working-tree changes' '创建本地 Git 提交' 'separate explicit authorization'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/ingest.md" || { echo "$agent_name 写入规则缺少收尾契约：$marker" >&2; exit 1; }
     done
-    for marker in 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md' 'temporary authority' 'preserve their union' 'Never use an old updater' 'no staged changes' 'framework allowlist'; do
+    for marker in 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md' 'temporary authority' 'preserve their union' 'Never use an old updater' 'no staged changes' 'framework allowlist' 'framework update has not started' 'Do not default to stashing' 'Git has not recorded it'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/update.md" || { echo "$agent_name 更新规则缺少跨版本契约：$marker" >&2; exit 1; }
     done
   done

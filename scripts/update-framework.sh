@@ -32,7 +32,7 @@ if [[ -d "$source_ref" ]]; then source_dir="$(cd "$source_ref" && pwd)"; else
 fi
 [[ -f "$source_dir/.kb-role" && "$(tr -d '[:space:]' < "$source_dir/.kb-role")" == "template" ]] || { echo "错误：来源不是模板仓库。" >&2; exit 1; }
 if [[ -n "$(git -C "$root" status --porcelain)" ]]; then
-  [[ "$resume" == "yes" ]] || { echo "错误：个人仓库存在未提交修改；仅在恢复已中断的框架更新时使用 --resume-framework-update。" >&2; exit 1; }
+  [[ "$resume" == "yes" ]] || { echo "错误：框架尚未开始更新，个人仓库存在未提交修改。请先让 Agent 展示这些现有修改，确认后创建本地 Git 提交（不推送），提交完成后再继续更新知识库框架。--resume-framework-update 仅用于恢复已中断且通过白名单检查的框架更新。" >&2; exit 1; }
   [[ -z "$(git -C "$root" diff --cached --name-only)" ]] || { echo "错误：续跑已停止，存在暂存区修改。" >&2; exit 1; }
   while IFS= read -r path; do
     [[ -z "$path" ]] && continue
@@ -90,4 +90,5 @@ grep -Fq 'work-knowledge-navigation' "$root/.obsidian/appearance.json" || echo '
 [[ ! -e "$root/skills" ]] || rm -rf "$root/skills"
 echo "框架已更新：$target_version -> $source_version"
 echo "备份：$backup"
-echo "个人数据、归档、个人规则和写入日志未被覆盖。提交和推送尚未执行。"
+echo "个人数据、归档、个人规则和写入日志未被覆盖。"
+echo "框架已经更新完成，但这些变更尚未创建 Git 提交。请让 Agent 先展示本次框架变更并询问是否创建本地 Git 提交；不会自动推送。"

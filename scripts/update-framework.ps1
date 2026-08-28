@@ -18,7 +18,7 @@ try {
     if ((Get-Content -Raw -LiteralPath (Join-Path $sourceRoot '.kb-role')).Trim() -ne 'template') { throw '来源不是模板仓库。' }
     $dirty = @(git -c core.quotepath=false -C $target status --porcelain)
     if ($dirty.Count -gt 0) {
-        if (-not $ResumeFrameworkUpdate) { throw '个人仓库存在未提交修改，请先处理；仅在恢复已中断的框架更新时使用 -ResumeFrameworkUpdate。' }
+        if (-not $ResumeFrameworkUpdate) { throw '框架尚未开始更新：个人仓库存在未提交修改。请先让 Agent 展示这些现有修改，确认后创建本地 Git 提交（不推送），提交完成后再继续更新知识库框架。-ResumeFrameworkUpdate 仅用于恢复已中断且通过白名单检查的框架更新。' }
         $staged = @(git -c core.quotepath=false -C $target diff --cached --name-only)
         if ($staged.Count -gt 0) { throw '续跑已停止：存在暂存区修改。' }
         $changed = @(
@@ -113,7 +113,8 @@ try {
     if (Test-Path -LiteralPath $legacy) { Remove-Item -LiteralPath $legacy -Recurse -Force }
     Write-Host "框架已更新到 $sourceVersion"
     Write-Host "备份：$backup"
-    Write-Host '个人数据、归档、个人规则和写入日志未被覆盖。提交和推送尚未执行。'
+    Write-Host '个人数据、归档、个人规则和写入日志未被覆盖。'
+    Write-Host '框架已经更新完成，但这些变更尚未创建 Git 提交。请让 Agent 先展示本次框架变更并询问是否创建本地 Git 提交；不会自动推送。'
 } finally {
     if (Test-Path -LiteralPath $temp) { Remove-Item -LiteralPath $temp -Recurse -Force }
 }

@@ -1,4 +1,4 @@
-[![Framework v0.7.13](https://img.shields.io/badge/framework-v0.7.13-2563eb?style=for-the-badge)](.kb-version)
+[![Framework v0.7.14](https://img.shields.io/badge/framework-v0.7.14-2563eb?style=for-the-badge)](.kb-version)
 
 <div align="center">
 
@@ -161,7 +161,7 @@ python scripts/kb-index.py
 
 <div align="center">
 
-当前框架版本：**0.7.13**
+当前框架版本：**0.7.14**
 
 模板负责提供能力，私人仓库始终由用户自己控制。
 
