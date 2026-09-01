@@ -9,6 +9,10 @@ Whenever user confirmation is required, or one or more optional actions are avai
 - When several optional actions exist, number them and give each a different exact reply.
 - Put nothing after the action block.
 - Do not say “请让 Agent……”. Address the user directly.
+- Never use bare `A`, `B`, a number, “确认”, or “确认提交” as the requested reply. The reply itself must name the authorized action and its boundary.
+- Standard content-write reply: `确认按上述预览写入知识库，不提交、不推送。`
+- Standard archive/delete/merge/move replies are defined in `references/maintenance.md`; do not improvise shorter variants.
+- Before any push, display the commits, remote, and target branch. Use exact reply `确认将上述本地提交推送到已显示的远程分支。`; commit and push must never share one authorization.
 - If no confirmation or useful optional action exists, do not manufacture an action block.
 
 Example:

@@ -18,7 +18,7 @@ try {
     if ((Get-Content -Raw -LiteralPath (Join-Path $sourceRoot '.kb-role')).Trim() -ne 'template') { throw '来源不是模板仓库。' }
     $dirty = @(git -c core.quotepath=false -C $target status --porcelain)
     if ($dirty.Count -gt 0) {
-        if (-not $ResumeFrameworkUpdate) { throw '框架尚未开始更新：个人仓库存在未提交修改。请先让 Agent 展示这些现有修改，确认后创建本地 Git 提交（不推送），提交完成后再继续更新知识库框架。-ResumeFrameworkUpdate 仅用于恢复已中断且通过白名单检查的框架更新。' }
+        if (-not $ResumeFrameworkUpdate) { throw "框架尚未开始更新：个人仓库存在未提交修改。`n`n---`n`n## ➡️ 可选的下一步`n`n### 1. 展示并处理现有修改`n`n只展示阻塞更新的差异，不会立即提交、丢弃或推送。`n`n请直接回复：``确认展示阻塞更新的现有修改。```n`n### 2. 取消本次更新`n`n不会修改知识库。`n`n请直接回复：``取消本次框架更新。``" }
         $staged = @(git -c core.quotepath=false -C $target diff --cached --name-only)
         if ($staged.Count -gt 0) { throw '续跑已停止：存在暂存区修改。' }
         $changed = @(

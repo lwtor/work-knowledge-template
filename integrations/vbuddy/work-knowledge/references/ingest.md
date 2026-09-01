@@ -6,7 +6,7 @@
 4. Search indexes, aliases, tags, and the knowledge, project, and inbox roots resolved by `references/layout.md`.
 5. Decide whether to update an existing note, create a note, or stage it in the resolved inbox root.
 6. Show the proposed files, paths, complete frontmatter, and content summary. Record the existing Git working-tree changes before writing so unrelated dirty files are not attributed to this operation.
-7. Wait for user confirmation before writing.
+7. End the preview with the required-confirmation block. State that it will write only the displayed files and will not commit or push. Use exact reply `确认按上述预览写入知识库，不提交、不推送。`. Wait for that confirmation before writing.
 8. After writing, update `updated` and append the current month under `AI/写入日志/`; update `last_verified` only when actually revalidated.
 9. Rebuild indexes when useful; do not hand-maintain derived index entries.
 10. Verify the written files, inspect Git status, and report created, updated, linked, omitted, unresolved, and version-control state. Distinguish this operation's changes from pre-existing dirty files.
