@@ -47,6 +47,7 @@ required+=(
   "Vault/01-知识/INDEX.md" "Vault/02-项目/INDEX.md" "Vault/02-项目/需求中心.md" "Vault/03-案例/INDEX.md"
   "Vault/.obsidian/app.json" "scripts/kb_layout.py" "scripts/kb-migrate-layout.py" "scripts/migrate-layout.ps1" "scripts/migrate-layout.sh"
   "Vault/.obsidian/appearance.json" "Vault/.obsidian/snippets/work-knowledge-vault.css"
+  "integrations/shared/work-knowledge/references/interaction.md" "scripts/sync-agent-interaction.py"
 )
 for agent_name in codex bluecode vbuddy; do
   required+=("integrations/$agent_name/work-knowledge/references/layout.md" "integrations/$agent_name/work-knowledge/references/migration.md" "integrations/$agent_name/work-knowledge/references/interaction.md")
@@ -77,19 +78,20 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
     for marker in 'name: work-knowledge' 'description:' 'references/layout.md' 'references/interaction.md' 'references/ingest.md' 'references/query.md' 'references/project.md' 'references/maintenance.md' 'references/update.md' 'references/migration.md'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/SKILL.md" || { echo "$agent_name Skill 入口缺少契约：$marker" >&2; exit 1; }
     done
-    for marker in '## ⚠️ 需要你确认' '## ➡️ 可选的下一步' 'Put nothing after the action block' 'Never use bare' '请直接回复' '确认按上述预览写入知识库，不提交、不推送' '确认将上述本地提交推送到已显示的远程分支'; do
+    cmp -s "$root/integrations/shared/work-knowledge/references/interaction.md" "$root/integrations/$agent_name/work-knowledge/references/interaction.md" || { echo "$agent_name 交互规则与共享权威文件不一致；请运行 python scripts/sync-agent-interaction.py" >&2; exit 1; }
+    for marker in '## ⚠️ 需要你确认' '## ➡️ 可选的下一步' 'Reply `0`' '回复数字' 'most recent action block' 'recompute all currently applicable actions' 'Choosing one item does not dismiss the others' '确认按上述预览写入知识库，不提交、不推送' '确认将上述本地提交推送到已显示的远程分支'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/interaction.md" || { echo "$agent_name 强提示规则缺少契约：$marker" >&2; exit 1; }
     done
-    for marker in 'recursively enumerate' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level' 'current branch' 'knowledge health' '查看知识库状态'; do
+    for marker in 'recursively enumerate' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level' 'current branch' 'knowledge health' '查看知识库状态' 'Recompute the pending-action queue' 'Choosing one item does not dismiss the others'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/query.md" || { echo "$agent_name 查询规则缺少状态契约：$marker" >&2; exit 1; }
     done
-    for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified' 'existing Git working-tree changes' '确认按上述预览写入知识库，不提交、不推送' '## ➡️ 可选的下一步' '确认展示本次知识库变更并创建本地提交，不推送' 'separate explicit authorization'; do
+    for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified' 'existing Git working-tree changes' 'numbered required-confirmation block' '确认按上述预览写入知识库，不提交、不推送' 'recomputed optional-action queue' 'Include every other still-applicable action too' '确认展示本次知识库变更并创建本地提交，不推送' 'separate explicit authorization'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/ingest.md" || { echo "$agent_name 写入规则缺少收尾契约：$marker" >&2; exit 1; }
     done
     for marker in '确认按上述预览归档指定笔记，不提交、不推送' '确认删除上述指定文件，不提交、不推送' '确认按上述预览合并指定笔记，不提交、不推送' '确认按上述预览移动指定文件，不提交、不推送'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/maintenance.md" || { echo "$agent_name 维护规则缺少确认契约：$marker" >&2; exit 1; }
     done
-    for marker in 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md' 'temporary authority' 'preserve their union' 'Never use an old updater' 'no staged changes' 'framework allowlist' 'framework update has not started' 'Do not default to stashing' 'never use bare A/B' '确认展示阻塞更新的现有修改' '确认提交已展示的现有修改' '## ➡️ 可选的下一步' '确认展示框架变更并创建本地提交，不推送' '确认生成目录迁移预览'; do
+    for marker in 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md' 'temporary authority' 'preserve their union' 'Never use an old updater' 'no staged changes' 'framework allowlist' 'framework update has not started' 'numbered optional-action block' 'Choosing the commit does not dismiss migration' 'include item 0' '确认展示阻塞更新的现有修改' '确认提交已展示的现有修改' '## ➡️ 可选的下一步' '确认展示框架变更并创建本地提交，不推送' '确认生成目录迁移预览'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/update.md" || { echo "$agent_name 更新规则缺少跨版本契约：$marker" >&2; exit 1; }
     done
   done

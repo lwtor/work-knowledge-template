@@ -18,7 +18,7 @@ try {
     if ((Get-Content -Raw -LiteralPath (Join-Path $sourceRoot '.kb-role')).Trim() -ne 'template') { throw '来源不是模板仓库。' }
     $dirty = @(git -c core.quotepath=false -C $target status --porcelain)
     if ($dirty.Count -gt 0) {
-        if (-not $ResumeFrameworkUpdate) { throw "框架尚未开始更新：个人仓库存在未提交修改。`n`n---`n`n## ➡️ 可选的下一步`n`n### 1. 展示并处理现有修改`n`n只展示阻塞更新的差异，不会立即提交、丢弃或推送。`n`n请直接回复：``确认展示阻塞更新的现有修改。```n`n### 2. 取消本次更新`n`n不会修改知识库。`n`n请直接回复：``取消本次框架更新。``" }
+        if (-not $ResumeFrameworkUpdate) { throw "框架尚未开始更新：个人仓库存在未提交修改。`n`n---`n`n## ➡️ 可选的下一步`n`n### 1. 展示并处理现有修改`n`n只展示阻塞更新的差异，不会立即提交、丢弃或推送。`n`n回复数字：``1```n`n或复制回复：``确认展示阻塞更新的现有修改。```n`n### 2. 取消本次更新`n`n不会修改知识库。`n`n回复数字：``2```n`n或复制回复：``取消本次框架更新。```n`n### 0. 暂不处理以上操作`n`n回复数字：``0``" }
         $staged = @(git -c core.quotepath=false -C $target diff --cached --name-only)
         if ($staged.Count -gt 0) { throw '续跑已停止：存在暂存区修改。' }
         $changed = @(
@@ -48,7 +48,7 @@ try {
     Write-Host ('将保护：' + ($protected -join ', '))
     Write-Host ('仅缺失时补充且绝不覆盖：' + ($additive -join ', '))
     Write-Host 'Obsidian：更新模板侧栏 CSS；appearance.json 和 app.json 仅在缺失或空配置时补充。'
-    if (-not $Confirm) { throw "尚未确认，框架更新尚未开始。`n`n---`n`n## ⚠️ 需要你确认`n`n执行上述框架更新；不会创建 Git 提交、推送或迁移个人目录。`n`n请直接回复：``确认执行框架更新，不提交、不推送。``" }
+    if (-not $Confirm) { throw "尚未确认，框架更新尚未开始。`n`n---`n`n## ⚠️ 需要你确认`n`n### 1. 执行框架更新`n`n不会创建 Git 提交、推送或迁移个人目录。`n`n回复数字：``1```n`n或复制回复：``确认执行框架更新，不提交、不推送。``" }
     $backup = Join-Path $target ('.kb-backups\framework-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
     New-Item -ItemType Directory -Force -Path $backup | Out-Null
     foreach ($relative in $framework) {
@@ -120,8 +120,9 @@ try {
     if ($layoutVersion -eq '1') { Write-Host '目录结构 1 正常可用。' }
     Write-Host '框架已经更新完成，但这些变更尚未创建 Git 提交。'
     Write-Host "`n---`n`n## ➡️ 可选的下一步`n"
-    Write-Host "### 1. 创建框架更新的本地提交`n`n先展示框架变更，再创建本地提交；不会推送。`n`n请直接回复：``确认展示框架变更并创建本地提交，不推送。``"
-    if ($layoutVersion -eq '1') { Write-Host "`n### 2. 生成目录迁移预览`n`n只生成预览，不移动文件、不提交、不推送。`n`n请直接回复：``确认生成目录迁移预览。``" }
+    Write-Host "### 1. 创建框架更新的本地提交`n`n先展示框架变更，再创建本地提交；不会推送。`n`n回复数字：``1```n`n或复制回复：``确认展示框架变更并创建本地提交，不推送。``"
+    if ($layoutVersion -eq '1') { Write-Host "`n### 2. 生成目录迁移预览`n`n只生成预览，不移动文件、不提交、不推送。`n`n回复数字：``2```n`n或复制回复：``确认生成目录迁移预览。``" }
+    Write-Host "`n### 0. 暂不处理以上操作`n`n回复数字：``0``"
 } finally {
     if (Test-Path -LiteralPath $temp) { Remove-Item -LiteralPath $temp -Recurse -Force }
 }

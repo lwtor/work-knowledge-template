@@ -10,6 +10,8 @@
 # 本地生成的索引或缓存
 .kb-cache/
 .vector-index/
+__pycache__/
+*.py[cod]
 
 # 框架更新前的本地备份
 .kb-backups/

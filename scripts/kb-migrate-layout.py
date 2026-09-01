@@ -97,8 +97,10 @@ def report(root: Path, moves: list[tuple[Path, Path]]) -> None:
     print("- 不自动重新分类，不提交，不推送")
     print("当前旧目录仍可正常使用。")
     print("\n---\n\n## ⚠️ 需要你确认\n")
-    print("执行上述目录迁移。将移动预览中列出的文件，但不会创建 Git 提交或推送。\n")
-    print("请直接回复：`确认执行目录迁移，不提交、不推送。`")
+    print("### 1. 执行目录迁移\n")
+    print("将移动预览中列出的文件，但不会创建 Git 提交或推送。\n")
+    print("回复数字：`1`\n")
+    print("或复制回复：`确认执行目录迁移，不提交、不推送。`")
 
 
 def install_skeleton(root: Path) -> None:
@@ -197,7 +199,10 @@ def migrate(root: Path, moves: list[tuple[Path, Path]]) -> None:
     print("\n---\n\n## ➡️ 可选的下一步\n")
     print("### 1. 创建目录迁移的本地提交\n")
     print("先展示迁移差异，再创建本地提交；不会推送。\n")
-    print("请直接回复：`确认展示目录迁移差异并创建本地提交，不推送。`")
+    print("回复数字：`1`\n")
+    print("或复制回复：`确认展示目录迁移差异并创建本地提交，不推送。`\n")
+    print("### 0. 暂不处理以上操作\n")
+    print("回复数字：`0`")
 
 
 def main() -> int:

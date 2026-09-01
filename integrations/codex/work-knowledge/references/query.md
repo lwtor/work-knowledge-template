@@ -19,12 +19,13 @@ Use this mode when the user says “查看知识库状态”, “知识库状态
 4. Inspect repository state without changing it: current branch, tracking branch, staged/unstaged/untracked paths, and local ahead/behind counts when already available. Do not fetch, commit, pull, push, or clean merely to produce status.
 5. Summarize knowledge health: substantive note counts by area, Inbox backlog, unverified or review-due notes, generated-index presence, and lint warnings when the repository's read-only lint tool is available. Do not repair findings in status mode.
 6. Read the personal repository root `.kb-version` as the current framework version. For this status report only, read the latest version from `https://raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version`; do not read or copy other template files.
-7. Report content, health, Git, framework version, and the resolved layout version. Missing marker or layout 1 is healthy and usable. In status mode only, if layout 1 is active, add a numbered optional action named “生成目录迁移预览” with exact reply `确认生成目录迁移预览。`; state that it will not move files, commit, or push.
-8. If the latest version is newer, state that the current version remains usable and show this optional command once:
+7. Report content, health, Git, framework version, and the resolved layout version. Missing marker or layout 1 is healthy and usable.
+8. Recompute the pending-action queue on every status request. If layout 1 is active, include “生成目录迁移预览”. If the latest version is newer, include “更新知识库框架” and state that the current version remains usable. If both apply, show both in the same numbered block; do not hide migration merely because update is selected or completed.
+9. For framework update, include this copyable alternative below its number:
 
 ```text
 请读取 https://raw.githubusercontent.com/lwtor/work-knowledge-template/main/UPDATE.md，并严格按照其中最新协议把我的私人知识库框架更新到模板最新版本。更新前先展示版本变化、更新范围、受保护的个人数据和备份位置，等我确认后再执行；不要自动提交或推送。
 ```
 
-9. If the latest version cannot be read, report it as unavailable; do not guess. Never modify notes, rebuild indexes, update, commit, pull, or push from a status request.
-10. Collect every applicable migration, framework-update, local-commit, and push option into one final `## ➡️ 可选的下一步` block following `references/interaction.md`. Do not place optional actions in the status summary or write anything after this block.
+10. If the latest version cannot be read, report it as unavailable; do not guess. Never modify notes, rebuild indexes, update, commit, pull, or push from a status request.
+11. Collect every applicable migration, framework-update, local-commit, and push option into one final `## ➡️ 可选的下一步` block following `references/interaction.md`. Number all items and support both number and copyable reply. Choosing one item does not dismiss the others. After that action finishes, fails, or is cancelled, recompute and repeat every still-applicable item. Only an explicit `0`, “暂不处理以上操作”, or an action-specific refusal suppresses it for the current conversation. Do not place optional actions in the status summary or write anything after this block.
