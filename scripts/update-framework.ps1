@@ -48,7 +48,7 @@ try {
     Write-Host ('将保护：' + ($protected -join ', '))
     Write-Host ('仅缺失时补充且绝不覆盖：' + ($additive -join ', '))
     Write-Host 'Obsidian：更新模板侧栏 CSS；appearance.json 和 app.json 仅在缺失或空配置时补充。'
-    if (-not $Confirm) { throw '尚未确认。检查以上范围后使用 -Confirm 执行。' }
+    if (-not $Confirm) { throw "尚未确认，框架更新尚未开始。`n`n---`n`n## ⚠️ 需要你确认`n`n执行上述框架更新；不会创建 Git 提交、推送或迁移个人目录。`n`n请直接回复：``确认执行框架更新，不提交、不推送。``" }
     $backup = Join-Path $target ('.kb-backups\framework-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
     New-Item -ItemType Directory -Force -Path $backup | Out-Null
     foreach ($relative in $framework) {
@@ -117,8 +117,11 @@ try {
     $layoutMarker = Join-Path $target '.kb-layout-version'
     if (-not (Test-Path -LiteralPath $layoutMarker -PathType Leaf)) { [IO.File]::WriteAllText($layoutMarker, "1`n", [Text.UTF8Encoding]::new($false)) }
     $layoutVersion = (Get-Content -Raw -LiteralPath $layoutMarker).Trim()
-    if ($layoutVersion -eq '1') { Write-Host '目录结构 1 正常可用。若想使用新版 Obsidian 目录，请让 Agent 先按照 MIGRATION.md 生成迁移预览；现在不会创建或写入 Vault。' }
-    Write-Host '框架已经更新完成，但这些变更尚未创建 Git 提交。请让 Agent 先展示本次框架变更并询问是否创建本地 Git 提交；不会自动推送。'
+    if ($layoutVersion -eq '1') { Write-Host '目录结构 1 正常可用。' }
+    Write-Host '框架已经更新完成，但这些变更尚未创建 Git 提交。'
+    Write-Host "`n---`n`n## ➡️ 可选的下一步`n"
+    Write-Host "### 1. 创建框架更新的本地提交`n`n先展示框架变更，再创建本地提交；不会推送。`n`n请直接回复：``确认展示框架变更并创建本地提交，不推送。``"
+    if ($layoutVersion -eq '1') { Write-Host "`n### 2. 生成目录迁移预览`n`n只生成预览，不移动文件、不提交、不推送。`n`n请直接回复：``确认生成目录迁移预览。``" }
 } finally {
     if (Test-Path -LiteralPath $temp) { Remove-Item -LiteralPath $temp -Recurse -Force }
 }

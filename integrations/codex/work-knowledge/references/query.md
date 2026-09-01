@@ -19,7 +19,7 @@ Use this mode when the user says “查看知识库状态”, “知识库状态
 4. Inspect repository state without changing it: current branch, tracking branch, staged/unstaged/untracked paths, and local ahead/behind counts when already available. Do not fetch, commit, pull, push, or clean merely to produce status.
 5. Summarize knowledge health: substantive note counts by area, Inbox backlog, unverified or review-due notes, generated-index presence, and lint warnings when the repository's read-only lint tool is available. Do not repair findings in status mode.
 6. Read the personal repository root `.kb-version` as the current framework version. For this status report only, read the latest version from `https://raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version`; do not read or copy other template files.
-7. Report content, health, Git, framework version, and the resolved layout version. Missing marker or layout 1 is healthy and usable. In status mode only, if layout 1 is active, show this optional command once: `请先按照 MIGRATION.md 生成目录迁移预览，现在不要移动文件。` End with only actions that apply; each remains optional and separately authorized.
+7. Report content, health, Git, framework version, and the resolved layout version. Missing marker or layout 1 is healthy and usable. In status mode only, if layout 1 is active, add a numbered optional action named “生成目录迁移预览” with exact reply `确认生成目录迁移预览。`; state that it will not move files, commit, or push.
 8. If the latest version is newer, state that the current version remains usable and show this optional command once:
 
 ```text
@@ -27,3 +27,4 @@ Use this mode when the user says “查看知识库状态”, “知识库状态
 ```
 
 9. If the latest version cannot be read, report it as unavailable; do not guess. Never modify notes, rebuild indexes, update, commit, pull, or push from a status request.
+10. Collect every applicable migration, framework-update, local-commit, and push option into one final `## ➡️ 可选的下一步` block following `references/interaction.md`. Do not place optional actions in the status summary or write anything after this block.

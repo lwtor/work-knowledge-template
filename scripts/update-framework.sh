@@ -94,7 +94,11 @@ echo "框架已更新：$target_version -> $source_version"
 echo "备份：$backup"
 echo "个人数据、归档、个人规则和写入日志未被覆盖。"
 [[ -f "$root/.kb-layout-version" ]] || printf '1\n' > "$root/.kb-layout-version"
-if [[ "$(tr -d '[:space:]' < "$root/.kb-layout-version")" == "1" ]]; then
-  echo "目录结构 1 正常可用。若想使用新版 Obsidian 目录，请让 Agent 先按照 MIGRATION.md 生成迁移预览；现在不会创建或写入 Vault。"
+layout_version="$(tr -d '[:space:]' < "$root/.kb-layout-version")"
+[[ "$layout_version" != "1" ]] || echo "目录结构 1 正常可用。"
+echo "框架已经更新完成，但这些变更尚未创建 Git 提交。"
+printf '\n---\n\n## ➡️ 可选的下一步\n\n'
+printf '### 1. 创建框架更新的本地提交\n\n先展示框架变更，再创建本地提交；不会推送。\n\n请直接回复：`确认展示框架变更并创建本地提交，不推送。`\n'
+if [[ "$layout_version" == "1" ]]; then
+  printf '\n### 2. 生成目录迁移预览\n\n只生成预览，不移动文件、不提交、不推送。\n\n请直接回复：`确认生成目录迁移预览。`\n'
 fi
-echo "框架已经更新完成，但这些变更尚未创建 Git 提交。请让 Agent 先展示本次框架变更并询问是否创建本地 Git 提交；不会自动推送。"

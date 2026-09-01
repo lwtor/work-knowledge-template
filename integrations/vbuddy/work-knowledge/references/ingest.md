@@ -10,6 +10,6 @@
 8. After writing, update `updated` and append the current month under `AI/写入日志/`; update `last_verified` only when actually revalidated.
 9. Rebuild indexes when useful; do not hand-maintain derived index entries.
 10. Verify the written files, inspect Git status, and report created, updated, linked, omitted, unresolved, and version-control state. Distinguish this operation's changes from pre-existing dirty files.
-11. If this operation produced uncommitted knowledge changes, end with one optional question: “是否要我先展示本次知识库变更并创建本地 Git 提交？不会自动推送。” Do not commit without confirmation. A later push requires separate explicit authorization. If a touched file was already dirty and the changes cannot be safely separated, report that instead of offering an unsafe commit.
+11. If this operation produced uncommitted knowledge changes, end with a `## ➡️ 可选的下一步` block named “创建本次知识变更的本地提交”. State that it will first show the changes and will not push. Use exact reply `确认展示本次知识库变更并创建本地提交，不推送。`. A later push requires separate explicit authorization. If a touched file was already dirty and the changes cannot be safely separated, report that instead of offering an unsafe commit.
 
 Do not present inference as fact, silently overwrite or merge notes, invent sources, or claim content was saved unless the files were actually written.

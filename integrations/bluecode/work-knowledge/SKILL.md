@@ -17,6 +17,8 @@ Before operating, read `AGENTS.md`, `AI/启动配置.md`, `AI/AI-GUIDE.md`, and 
 
 Before choosing any content path, read `references/layout.md` and resolve `.kb-layout-version`. Never mix layout 1 and layout 2 paths. If `.kb-migration/state.json` exists, pause ordinary writes and tell the user exactly how to resume the migration.
 
+Before responding, read `references/interaction.md`. Any required confirmation or optional next action must use its separate final action block.
+
 ## Route the request
 
 - To update the knowledge-base framework itself, read `references/update.md` first. This route is distinct from updating a note or project record.

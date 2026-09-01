@@ -5,6 +5,7 @@ import argparse
 import json
 import shutil
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -94,7 +95,10 @@ def report(root: Path, moves: list[tuple[Path, Path]]) -> None:
         print(f"- {name}/ -> {target}/：{counts[name]} 个个人文件")
     print(f"- 总计移动：{len(moves)} 个文件")
     print("- 不自动重新分类，不提交，不推送")
-    print("当前旧目录仍可正常使用。若确认执行，请回复：确认执行目录迁移，不提交、不推送。")
+    print("当前旧目录仍可正常使用。")
+    print("\n---\n\n## ⚠️ 需要你确认\n")
+    print("执行上述目录迁移。将移动预览中列出的文件，但不会创建 Git 提交或推送。\n")
+    print("请直接回复：`确认执行目录迁移，不提交、不推送。`")
 
 
 def install_skeleton(root: Path) -> None:
@@ -189,10 +193,18 @@ def migrate(root: Path, moves: list[tuple[Path, Path]]) -> None:
         fail(f"迁移中断。不要继续普通写入；备份位于 {backup}，状态位于 {state}。")
     print(f"目录迁移完成：布局 2；移动 {len(moves)} 个文件；修复 {rewritten} 个含旧路径的 Markdown 文件；备份：{backup}")
     print(f"以后请用 Obsidian 打开：{root / 'Vault'}")
-    print("目录迁移已完成，但 Git 尚未记录这些变化。请让 Agent 展示迁移差异并询问是否创建本地 Git 提交；不会自动推送。")
+    print("目录迁移已完成，但 Git 尚未记录这些变化。")
+    print("\n---\n\n## ➡️ 可选的下一步\n")
+    print("### 1. 创建目录迁移的本地提交\n")
+    print("先展示迁移差异，再创建本地提交；不会推送。\n")
+    print("请直接回复：`确认展示目录迁移差异并创建本地提交，不推送。`")
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description="预览或执行个人知识库布局 1 到布局 2 的迁移。")
     parser.add_argument("--root", required=True)
     parser.add_argument("--apply", action="store_true")

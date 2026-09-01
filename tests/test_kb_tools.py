@@ -136,10 +136,10 @@ aliases: []
         subprocess.run(["git", "-C", str(self.root), "add", "."], check=True)
         subprocess.run(["git", "-C", str(self.root), "commit", "-m", "fixture"], check=True, capture_output=True)
         command = [sys.executable, str(ROOT / "scripts" / "kb-migrate-layout.py"), "--root", str(self.root)]
-        preview = subprocess.run(command, text=True, capture_output=True, check=False)
+        preview = subprocess.run(command, text=True, encoding="utf-8", capture_output=True, check=False)
         self.assertEqual(preview.returncode, 0, preview.stdout + preview.stderr)
         self.assertTrue((self.root / "Knowledge" / "old.md").is_file())
-        migrated = subprocess.run(command + ["--apply", "--confirm"], text=True, capture_output=True, check=False)
+        migrated = subprocess.run(command + ["--apply", "--confirm"], text=True, encoding="utf-8", capture_output=True, check=False)
         self.assertEqual(migrated.returncode, 0, migrated.stdout + migrated.stderr)
         self.assertTrue((self.root / "Vault" / "01-知识" / "old.md").is_file())
         migrated_text = (self.root / "Vault" / "01-知识" / "old.md").read_text(encoding="utf-8")
