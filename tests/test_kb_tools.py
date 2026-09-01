@@ -25,7 +25,7 @@ class KnowledgeToolsTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
-        for name in ("Knowledge", "Projects", "Inbox", "Daily", "Attachments", "Archive", "AI/写入日志"):
+        for name in ("Knowledge", "Projects", "Cases", "Inbox", "Daily", "Attachments", "Archive", "AI/写入日志"):
             (self.root / name).mkdir(parents=True)
 
     def tearDown(self):
@@ -76,9 +76,11 @@ confidentiality: internal
         transfer = load("kb_transfer", ROOT / "scripts" / "kb-transfer.py")
         (self.root / "Knowledge" / "INDEX.md").write_text("generated", encoding="utf-8")
         (self.root / "Knowledge" / "real.md").write_text("real", encoding="utf-8")
+        (self.root / "Cases" / "case.md").write_text("case", encoding="utf-8")
         files = transfer.data_files(self.root)
         self.assertNotIn("Knowledge/INDEX.md", files)
         self.assertIn("Knowledge/real.md", files)
+        self.assertIn("Cases/case.md", files)
 
     def test_transfer_detects_divergence_but_allows_target_state(self):
         transfer = load("kb_transfer_conflict", ROOT / "scripts" / "kb-transfer.py")
@@ -128,6 +130,7 @@ aliases: []
     def test_layout_migration_requires_apply_and_confirmation(self):
         (self.root / ".kb-role").write_text("personal\n", encoding="utf-8")
         (self.root / "Knowledge" / "old.md").write_text("# Old\n\n[[Projects/Demo]]\n", encoding="utf-8")
+        (self.root / "Cases" / "ai-case.md").write_text("# AI Case\n", encoding="utf-8")
         (self.root / ".obsidian").mkdir()
         (self.root / ".obsidian" / "appearance.json").write_text('{"enabledCssSnippets":["personal"]}\n', encoding="utf-8")
         subprocess.run(["git", "init", str(self.root)], check=True, capture_output=True)
@@ -147,6 +150,7 @@ aliases: []
         self.assertIn("### 1. 创建目录迁移的本地提交", migrated.stdout)
         self.assertIn("### 0. 暂不处理以上操作", migrated.stdout)
         self.assertTrue((self.root / "Vault" / "01-知识" / "old.md").is_file())
+        self.assertTrue((self.root / "Vault" / "03-案例" / "ai-case.md").is_file())
         migrated_text = (self.root / "Vault" / "01-知识" / "old.md").read_text(encoding="utf-8")
         self.assertIn("[[02-项目/Demo]]", migrated_text)
         appearance = (self.root / "Vault" / ".obsidian" / "appearance.json").read_text(encoding="utf-8")
@@ -154,6 +158,17 @@ aliases: []
         self.assertIn('"work-knowledge-vault"', appearance)
         self.assertTrue((self.root / "Vault" / ".obsidian" / "snippets" / "work-knowledge-vault.css").is_file())
         self.assertEqual((self.root / ".kb-layout-version").read_text(encoding="utf-8").strip(), "2")
+
+    def test_ai_case_contract_supports_optional_raw_transcript(self):
+        routing = (ROOT / "integrations" / "shared" / "work-knowledge" / "references" / "content-routing.md").read_text(encoding="utf-8")
+        case_template = (ROOT / "Templates" / "案例复盘.md").read_text(encoding="utf-8")
+        transcript_template = (ROOT / "Templates" / "案例原始对话.md").read_text(encoding="utf-8")
+        self.assertIn("Do not split every case by default", routing)
+        self.assertIn("one shared case_id", routing)
+        self.assertIn("## 对话阶段与引导动作", case_template)
+        self.assertIn("case_id:", case_template)
+        self.assertIn("case_id:", transcript_template)
+        self.assertIn("related_case: 案例复盘.md", transcript_template)
 
 
 if __name__ == "__main__":

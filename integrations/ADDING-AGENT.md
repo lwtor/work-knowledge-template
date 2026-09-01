@@ -9,7 +9,7 @@
 ### 1. 集成文件 `integrations/<agent>/work-knowledge/`
 
 - `SKILL.md`：frontmatter 含 `name: work-knowledge` 和带足中英触发词的 `description`（触发词命中率决定 Agent 何时调用技能）；正文含技能定位方式（读 `.managed-by-work-knowledge-template` 取 `knowledge_base`）、加载语义说明、路由表。
-- `references/` 包含写入、查询、项目、维护、更新、布局、迁移和交互规则。`interaction.md` 不得自行编写：权威源是 `integrations/shared/work-knowledge/references/interaction.md`，运行 `python scripts/sync-agent-interaction.py` 生成全部 Agent 副本。验证器会逐字检查，任何 Agent 的交互规则漂移都必须失败。其他 reference 可以从现有集成复制公共契约作为起点，但必须按目标 Agent 的术语和能力审查差异。
+- `references/` 包含写入、查询、项目、维护、更新、布局、迁移、内容分类和交互规则。`interaction.md` 与 `content-routing.md` 不得自行编写：权威源位于 `integrations/shared/work-knowledge/references/`，运行 `python scripts/sync-agent-interaction.py` 生成全部 Agent 副本；新增 Agent 时同步更新脚本中的 Agent 列表。验证器会逐字检查，任何副本漂移都必须失败。其他 reference 可以从现有集成复制公共契约作为起点，但必须按目标 Agent 的术语和能力审查差异。
 
 ### 2. 安装脚本 `scripts/install-<agent>-skill.ps1` 和 `.sh`
 
@@ -21,7 +21,7 @@
 ### 3. 验证脚本 `scripts/verify.ps1` 和 `scripts/verify.sh`
 
 - `required` 文件清单加入新 Agent 的全部集成文件和安装脚本。
-- 为 Windows 与 Bash 验证器新增一致的 Agent 选择值和分支：校验已安装 Skill 存在、marker 路径与当前库一致、六个文件与仓库版本哈希/`cmp` 一致。
+- 为 Windows 与 Bash 验证器新增一致的 Agent 选择值和分支：校验已安装 Skill 存在、marker 路径与当前库一致、全部 Skill 文件与仓库版本哈希/`cmp` 一致。
 - **坑（已踩）**：verify.sh 用 `set -u`，`expected` 变量必须在所有 Agent 分支之前定义（曾放在 codex 分支内，单独跑其他 Agent 验证时报未定义变量）。
 - 别忘了更新"旧的通用 skills 目录"报错信息里的 Agent 列表。
 

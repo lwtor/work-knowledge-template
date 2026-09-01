@@ -28,7 +28,7 @@ class Layout:
 
 
 LAYOUTS = {
-    1: Layout(1, "Home.md", "Knowledge", "Projects", None, "Inbox", "Daily", "Archive", "Attachments", "Templates"),
+    1: Layout(1, "Home.md", "Knowledge", "Projects", "Cases", "Inbox", "Daily", "Archive", "Attachments", "Templates"),
     2: Layout(2, "Vault/首页.md", "Vault/01-知识", "Vault/02-项目", "Vault/03-案例", "Vault/04-收集箱", "Vault/05-工作记录", "Vault/90-归档", "Vault/附件", "Vault/模板"),
 }
 

@@ -12,16 +12,16 @@
    - `1. 展示并处理现有修改`：说明只先展示差异，不会立即提交、丢弃或推送；支持回复数字 `1`，或复制回复 `确认展示阻塞更新的现有修改。`
    - `2. 取消本次更新`：支持回复数字 `2`，或复制回复 `取消本次框架更新。`
    用户选择展示后，列出实际差异；如果建议创建本地提交，必须再次用独立的“⚠️ 需要你确认”区块，将操作编号为 `1`，写明将提交的文件、不会推送，并同时给出数字回复 `1` 和复制回复 `确认提交已展示的现有修改，不推送；提交后继续更新框架。`。不得只说“回复确认提交”。不得把 `stash`、丢弃修改或手工执行命令作为默认选择。只有用户明确选择临时保存或丢弃时，才能在再次展示影响并获得确认后执行相应操作。
-   - 唯一例外是此前框架更新已经中断，且用户明确确认续跑。此时只允许更新器的恢复开关继续：不得存在暂存修改，全部未提交路径必须位于框架白名单内，`Knowledge/`、`Projects/`、`Daily/`、`Inbox/`、`Attachments/`、`Archive/`、`AI/LOCAL.md` 和写入日志不得有新差异；任一条件不满足都必须停止。
+   - 唯一例外是此前框架更新已经中断，且用户明确确认续跑。此时只允许更新器的恢复开关继续：不得存在暂存修改，全部未提交路径必须位于框架白名单内，`Knowledge/`、`Projects/`、`Cases/`、`Daily/`、`Inbox/`、`Attachments/`、`Archive/`、`AI/LOCAL.md` 和写入日志不得有新差异；任一条件不满足都必须停止。
 4. 已完整读取模板 `main` 分支最新的本文件，再读取目标个人仓库自己的 `AGENTS.md`、`AI/启动配置.md` 和已有更新规则；不得反过来以旧协议替代本文件。
 
 ## 更新边界
 
 允许更新的框架范围：`README.md`、`AGENTS.md`、`Home.md`、`AI/`、`Templates/`、`scripts/`、`integrations/`、`MIGRATION.md`、`.gitignore`、`.gitattributes`、`.kb-version`。
 
-必须保留：`Knowledge/`、`Projects/`、`Daily/`、`Inbox/`、`Attachments/`、`Archive/`、`Vault/`、`AI/LOCAL.md`、`AI/写入日志.md`、`AI/写入日志/`、`.kb-role`、`.kb-layout-version`，以及不属于已知框架路径的用户文件。框架更新不得创建、移动或写入 `Vault/`。
+必须保留：`Knowledge/`、`Projects/`、`Cases/`、`Daily/`、`Inbox/`、`Attachments/`、`Archive/`、`Vault/`、`AI/LOCAL.md`、`AI/写入日志.md`、`AI/写入日志/`、`.kb-role`、`.kb-layout-version`，以及不属于已知框架路径的用户文件。框架更新不得创建、移动或写入 `Vault/`。
 
-允许在受保护目录中仅补充缺失的框架入口文件：`Archive/README.md`、`Knowledge/README.md`、`Knowledge/INDEX.md`、`Projects/README.md`、`Projects/INDEX.md`、`Projects/TASKS.md`、`Inbox/README.md`、`Daily/README.md`。同名文件已经存在时不得覆盖，无论内容是否旧或不完整。
+允许在受保护目录中仅补充缺失的框架入口文件：`Archive/README.md`、`Knowledge/README.md`、`Knowledge/INDEX.md`、`Projects/README.md`、`Projects/INDEX.md`、`Projects/TASKS.md`、`Cases/README.md`、`Cases/INDEX.md`、`Inbox/README.md`、`Daily/README.md`。同名文件已经存在时不得覆盖，无论内容是否旧或不完整。
 
 ## 必须执行
 

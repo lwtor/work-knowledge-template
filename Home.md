@@ -14,6 +14,7 @@
 | 查看已经整理好的经验 | [[Knowledge/INDEX\|知识索引]] |
 | 查看项目进展和资料 | [[Projects/INDEX\|项目索引]] |
 | 查看所有项目待办 | [[Projects/TASKS\|跨项目待办]] |
+| 复盘值得分享的经历与 AI 协作过程 | [[Cases/INDEX\|案例索引]] |
 | 处理还没整理的内容 | [[Inbox/README\|Inbox]] |
 | 查看每日工作记录 | [[Daily/README\|日常记录]] |
 | 查找已经归档的历史 | [[Archive/README\|归档]] |

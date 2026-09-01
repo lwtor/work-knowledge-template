@@ -39,8 +39,8 @@ try {
     if ($sourceVersion -eq $targetVersion -and -not $ResumeFrameworkUpdate) { Write-Host "当前已是模板版本 $targetVersion，无需更新。"; return }
     if ($sourceVersion -eq $targetVersion) { Write-Host "框架版本均为 $targetVersion；正在续跑此前中断的同版本更新。" }
     $framework = @('README.md','AGENTS.md','Home.md','AI','Templates','scripts','integrations','MIGRATION.md','.gitignore','.gitattributes','.kb-version')
-    $additive = @('Archive\README.md','Knowledge\README.md','Knowledge\INDEX.md','Projects\README.md','Projects\INDEX.md','Projects\TASKS.md','Inbox\README.md','Daily\README.md')
-    $protected = @('Knowledge','Projects','Daily','Inbox','Attachments','Archive','Vault','AI\LOCAL.md','AI\写入日志.md','AI\写入日志','.kb-role','.kb-layout-version')
+    $additive = @('Archive\README.md','Knowledge\README.md','Knowledge\INDEX.md','Projects\README.md','Projects\INDEX.md','Projects\TASKS.md','Cases\README.md','Cases\INDEX.md','Inbox\README.md','Daily\README.md')
+    $protected = @('Knowledge','Projects','Cases','Daily','Inbox','Attachments','Archive','Vault','AI\LOCAL.md','AI\写入日志.md','AI\写入日志','.kb-role','.kb-layout-version')
     $obsidianSourceFiles = @('.obsidian\appearance.json','.obsidian\app.json','.obsidian\snippets\work-knowledge-navigation.css')
     foreach ($relative in $obsidianSourceFiles) { if (-not (Test-Path -LiteralPath (Join-Path $sourceRoot $relative) -PathType Leaf)) { throw "模板缺少 Obsidian 配置：$relative" } }
     Write-Host "框架版本：$targetVersion -> $sourceVersion"

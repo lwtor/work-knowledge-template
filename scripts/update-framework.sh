@@ -58,9 +58,9 @@ target_version="$(tr -d '[:space:]' < "$root/.kb-version")"
 if [[ "$source_version" == "$target_version" && "$resume" != "yes" ]]; then echo "当前已是模板版本 $target_version，无需更新。"; exit 0; fi
 [[ "$source_version" != "$target_version" ]] || echo "框架版本均为 $target_version；正在续跑此前中断的同版本更新。"
 framework=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "integrations" "MIGRATION.md" ".gitignore" ".gitattributes" ".kb-version")
-additive=("Archive/README.md" "Knowledge/README.md" "Knowledge/INDEX.md" "Projects/README.md" "Projects/INDEX.md" "Projects/TASKS.md" "Inbox/README.md" "Daily/README.md")
+additive=("Archive/README.md" "Knowledge/README.md" "Knowledge/INDEX.md" "Projects/README.md" "Projects/INDEX.md" "Projects/TASKS.md" "Cases/README.md" "Cases/INDEX.md" "Inbox/README.md" "Daily/README.md")
 obsidian_files=(".obsidian/appearance.json" ".obsidian/app.json" ".obsidian/snippets/work-knowledge-navigation.css")
-echo "将保护：Knowledge, Projects, Daily, Inbox, Attachments, Archive, Vault, AI/LOCAL.md, 写入日志, .kb-role, .kb-layout-version"
+echo "将保护：Knowledge, Projects, Cases, Daily, Inbox, Attachments, Archive, Vault, AI/LOCAL.md, 写入日志, .kb-role, .kb-layout-version"
 echo "框架更新不会迁移或写入个人内容目录。"
 for path in "${framework[@]}"; do [[ -e "$source_dir/$path" ]] || { echo "错误：模板缺少 $path。" >&2; exit 1; }; done
 for path in "${obsidian_files[@]}"; do [[ -f "$source_dir/$path" ]] || { echo "错误：模板缺少 Obsidian 配置：$path。" >&2; exit 1; }; done

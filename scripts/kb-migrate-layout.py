@@ -13,6 +13,7 @@ from pathlib import Path
 MAPPING = {
     "Knowledge": "Vault/01-知识",
     "Projects": "Vault/02-项目",
+    "Cases": "Vault/03-案例",
     "Inbox": "Vault/04-收集箱",
     "Daily": "Vault/05-工作记录",
     "Archive": "Vault/90-归档",

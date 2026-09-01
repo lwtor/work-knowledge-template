@@ -23,13 +23,15 @@ Before choosing any content path, read `references/layout.md` and resolve `.kb-l
 
 Before responding, read `references/interaction.md`. Any required confirmation or optional next action must use its separate final action block.
 
+Before choosing a content form, destination, or template for a save request, read `references/content-routing.md`. Strong explicit signals should route directly; ask a classification question only for genuine ambiguity.
+
 ## Route the request
 
 Reference files below live in `references/` next to this file; read them with file tools before acting.
 
 - To update the knowledge-base framework itself, read `references/update.md` first. This route is distinct from updating a note or project record.
 - To preview or perform the optional personal-data directory migration, read `references/migration.md`. Framework update is not migration authorization.
-- To save, summarize, remember, organize, or update conversation material, read `references/ingest.md`.
+- To save, summarize, remember, organize, or update conversation material, read `references/content-routing.md` and `references/ingest.md`.
 - To retrieve or search existing knowledge, read `references/query.md`.
 - To create or maintain project context, links, progress, or tasks, read `references/project.md`.
 - To lint, rebuild indexes, review stale knowledge, clean Inbox/Daily, archive, or handle attachments, read `AI/知识维护.md` and `references/maintenance.md`.
