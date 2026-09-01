@@ -63,7 +63,7 @@ cat <<EOF
 仓库角色：personal
 
 下一步：
-1. 用 Obsidian 打开这个目录；
+1. 用 Obsidian 打开 $target_dir/Vault，并进入“首页.md”；
 2. 重启已安装 Skill 的 Agent（BlueCode 必须重启进程；vBuddy 新开一个会话即可）；
 3. 新建对应 Agent 会话，直接说“把刚刚的对话总结到知识库”。
 EOF

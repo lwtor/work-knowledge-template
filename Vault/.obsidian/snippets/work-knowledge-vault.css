@@ -1,0 +1,12 @@
+/* Keep the everyday vault focused on knowledge, projects, cases and capture. */
+.nav-folder:has(> .nav-folder-title[data-path="附件"]),
+.nav-folder:has(> .nav-folder-title[data-path="模板"]),
+.nav-file:has(> .nav-file-title[data-path$="/README.md"]),
+.nav-file:has(> .nav-file-title[data-path$="/INDEX.md"]),
+.nav-file:has(> .nav-file-title[data-path$="/TASKS.md"]) {
+  display: none;
+}
+
+.workspace-leaf-content[data-type="markdown"] .view-content {
+  --file-line-width: 860px;
+}

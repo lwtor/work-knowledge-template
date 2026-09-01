@@ -23,9 +23,9 @@ from datetime import datetime, timezone
 
 
 FORMAT_VERSION = 1
-DATA_ROOTS = ("Knowledge", "Projects", "Daily", "Inbox", "Attachments", "Archive", "AI/写入日志")
-PLACEHOLDER_FILES = {f"{name}/README.md" for name in DATA_ROOTS}
-DERIVED_FILES = {"Knowledge/INDEX.md", "Projects/INDEX.md", "Projects/TASKS.md", "AI/待复核清单.md"}
+from kb_layout import detect_layout, layout_path
+
+LOG_ROOT = "AI/写入日志"
 STATE_DIR = ".kb-transfer"
 STATE_FILE = "manifest.json"
 BASE_DIR = "base"
@@ -59,15 +59,24 @@ def rel_key(path: Path, root: Path) -> str:
 
 def data_files(root: Path) -> dict[str, dict[str, int | str]]:
     result: dict[str, dict[str, int | str]] = {}
-    for name in DATA_ROOTS:
-        directory = root / name
+    layout = detect_layout(root)
+    data_roots = (*layout.content_roots, layout.attachments, layout.archive, LOG_ROOT)
+    derived = {
+        f"{layout.knowledge}/INDEX.md",
+        f"{layout.projects}/INDEX.md",
+        f"{layout.projects}/TASKS.md",
+        f"{layout.projects}/需求中心.md",
+        "AI/待复核清单.md",
+    }
+    for name in data_roots:
+        directory = layout_path(root, name)
         if not directory.is_dir():
             continue
         for path in directory.rglob("*"):
             if not path.is_file() or path.is_symlink():
                 continue
             relative = rel_key(path, root)
-            if relative in PLACEHOLDER_FILES or relative in DERIVED_FILES or path.name == ".gitkeep":
+            if path.name == "README.md" or relative in derived or path.name == ".gitkeep":
                 continue
             digest = hashlib.sha256(path.read_bytes()).hexdigest()
             result[relative] = {"sha256": digest, "size": path.stat().st_size}
@@ -308,12 +317,14 @@ def apply_package(age: str, package: Path, root: Path, manifest: dict, deleted: 
 
 def command_doctor(args: argparse.Namespace) -> None:
     root = vault_root(args.vault)
+    layout = detect_layout(root)
     print(json.dumps({
         "vault": str(root),
         "python": sys.version.split()[0],
         "git": shutil.which("git") is not None,
         "age": shutil.which("age") is not None,
-        "data_roots": list(DATA_ROOTS),
+        "layout_version": layout.version,
+        "data_roots": list((*layout.content_roots, layout.attachments, layout.archive, LOG_ROOT)),
         "encryption": "age passphrase",
         "incremental_state": str(root / STATE_DIR / STATE_FILE),
     }, ensure_ascii=False, indent=2))

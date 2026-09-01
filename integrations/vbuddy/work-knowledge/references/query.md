@@ -3,7 +3,7 @@
 1. Read `AI/AI-GUIDE.md`.
 2. Search by keywords, project names, system names, error text, tags, and aliases.
 3. Read generated indexes, project overviews, and the most relevant notes first; missing or stale indexes do not prove missing knowledge.
-4. Check sources, status, update and review dates, and confidence. Search `Archive/` only for historical requests.
+4. Check sources, status, update and review dates, and confidence. Search the resolved archive root only for historical requests.
 5. Separate confirmed facts, inference, and unknowns.
 6. Return the conclusion, applicable conditions, and local reference files.
 
@@ -13,13 +13,13 @@ If no reliable record exists, say so instead of inventing historical facts.
 
 Use this mode when the user says “查看知识库状态”, “知识库状态”, “检查知识库”, “看下我的知识库”, or otherwise asks to inspect the knowledge base itself. Treat “查看知识库状态” as the canonical copyable command. Do not use it for an ordinary targeted knowledge question.
 
-1. Recursively enumerate real files under `Knowledge/`, `Projects/`, `Inbox/`, `Daily/`, and `Archive/`. Do not inspect only the first directory level, and do not call the vault empty merely because its indexes or top-level README files are empty.
-2. Treat README files, generated `INDEX.md`, `TASKS.md`, and `.gitkeep` as structure rather than user knowledge. Count and list substantive notes separately, including nested paths such as `Knowledge/Git/example.md`.
+1. Resolve the active layout, then recursively enumerate real files under its knowledge, project, case (when available), inbox, daily, and archive roots. Do not inspect only the first directory level, and do not call the vault empty merely because its indexes or top-level README files are empty.
+2. Treat README files, generated `INDEX.md`, `TASKS.md`, and `.gitkeep` as structure rather than user knowledge. Count and list substantive notes separately, including nested paths under the resolved roots.
 3. Read the titles and relevant frontmatter or headings of substantive notes before summarizing them. If a note exists but is unverified, report it as unverified rather than omitting it.
 4. Inspect repository state without changing it: current branch, tracking branch, staged/unstaged/untracked paths, and local ahead/behind counts when already available. Do not fetch, commit, pull, push, or clean merely to produce status.
 5. Summarize knowledge health: substantive note counts by area, Inbox backlog, unverified or review-due notes, generated-index presence, and lint warnings when the repository's read-only lint tool is available. Do not repair findings in status mode.
 6. Read the personal repository root `.kb-version` as the current framework version. For this status report only, read the latest version from `https://raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version`; do not read or copy other template files.
-7. Report four compact sections: content, health, Git, and framework version. End with only the actions that actually apply: organize backlog, review knowledge, preview a local commit, push local commits, or update the framework. Each action remains optional and separately authorized.
+7. Report content, health, Git, framework version, and the resolved layout version. Missing marker or layout 1 is healthy and usable. In status mode only, if layout 1 is active, show this optional command once: `请先按照 MIGRATION.md 生成目录迁移预览，现在不要移动文件。` End with only actions that apply; each remains optional and separately authorized.
 8. If the latest version is newer, state that the current version remains usable and show this optional command once:
 
 ```text

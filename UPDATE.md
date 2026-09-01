@@ -14,9 +14,9 @@
 
 ## 更新边界
 
-允许更新的框架范围：`README.md`、`AGENTS.md`、`Home.md`、`AI/`、`Templates/`、`scripts/`、`integrations/`、`.gitignore`、`.gitattributes`、`.kb-version`。
+允许更新的框架范围：`README.md`、`AGENTS.md`、`Home.md`、`AI/`、`Templates/`、`scripts/`、`integrations/`、`MIGRATION.md`、`.gitignore`、`.gitattributes`、`.kb-version`。
 
-必须保留：`Knowledge/`、`Projects/`、`Daily/`、`Inbox/`、`Attachments/`、`Archive/`、`AI/LOCAL.md`、`AI/写入日志.md`、`AI/写入日志/`、`.kb-role`，以及不属于已知框架路径的用户文件。
+必须保留：`Knowledge/`、`Projects/`、`Daily/`、`Inbox/`、`Attachments/`、`Archive/`、`Vault/`、`AI/LOCAL.md`、`AI/写入日志.md`、`AI/写入日志/`、`.kb-role`、`.kb-layout-version`，以及不属于已知框架路径的用户文件。框架更新不得创建、移动或写入 `Vault/`。
 
 允许在受保护目录中仅补充缺失的框架入口文件：`Archive/README.md`、`Knowledge/README.md`、`Knowledge/INDEX.md`、`Projects/README.md`、`Projects/INDEX.md`、`Projects/TASKS.md`、`Inbox/README.md`、`Daily/README.md`。同名文件已经存在时不得覆盖，无论内容是否旧或不完整。
 
@@ -30,6 +30,7 @@
 6. 当前 Agent 是 Codex、BlueCode 或 vBuddy 时，使用更新后的个人仓库自身安装脚本重新安装对应的全局 Skill：Codex 用 `scripts/install-codex-skill.ps1`（Windows）/ `scripts/install-codex-skill.sh`（macOS/Linux），BlueCode 用 `scripts/install-bluecode-skill.ps1` / `scripts/install-bluecode-skill.sh`，vBuddy 用 `scripts/install-vbuddy-skill.ps1` / `scripts/install-vbuddy-skill.sh`。不得从模板目录直接安装。其他 Agent 跳过此步。BlueCode 安装或重装后必须提示用户重启 BlueCode 进程，新 Skill 才会被加载；vBuddy 提示用户新开一个会话即可。
 7. 使用更新后的个人仓库自身验证脚本并明确当前 Agent：Windows 使用 `scripts/verify.ps1 -Agent Codex`、`-Agent BlueCode` 或 `-Agent Vbuddy`；macOS/Linux 使用 `scripts/verify.sh --agent codex`、`--agent bluecode` 或 `--agent vbuddy`。不得因另一种可选 Agent 未安装或存在其他来源的 Skill 而失败。
 8. 展示变更摘要，并明确区分“框架文件已更新”和“Git 尚未记录本次更新”。若本次框架更新产生未提交变更，必须以这句可直接回答的问题收尾：`框架已经更新完成，但这些变更尚未创建 Git 提交。是否要我先展示本次框架变更并创建本地 Git 提交？不会自动推送。` 用户确认后仅提交本次框架更新；推送仍需再次单独授权。不得自动提交或推送。
+9. 若私人库没有 `.kb-layout-version`，只写入值 `1`，表示继续使用旧目录；不得复制模板的值 `2`。布局 1 必须报告为“正常可用”。框架更新完成后只提示一次可选迁移，并给出直接回复：“请先按照 MIGRATION.md 生成目录迁移预览，现在不要移动文件。”用户未选择迁移时不得反复提示。
 
 更新中断后的续跑仍需再次展示将执行的修复并获得确认。Windows 对最新模板更新器使用 `-ResumeFrameworkUpdate`；macOS/Linux 使用 `--resume-framework-update`。该开关不是通用的“忽略脏工作区”，只允许更新器通过上述白名单检查后恢复框架更新。
 

@@ -10,6 +10,7 @@ required=(
   "AI/知识维护.md" "AI/写入日志/README.md" "Archive/README.md"
   "Knowledge/README.md" "Knowledge/INDEX.md" "Projects/README.md" "Projects/INDEX.md" "Projects/TASKS.md" "Inbox/README.md" "Daily/README.md" "AI/待复核清单.md"
   "Templates/知识笔记.md" "Templates/项目总览.md" "Templates/问题解决.md" "Templates/日常记录.md"
+  "Templates/需求主页.md" "Templates/案例复盘.md" "Templates/快速记录.md" "Templates/文档学习笔记.md"
   "scripts/install-codex-skill.ps1"
   "scripts/install-codex-skill.sh"
   "scripts/install-bluecode-skill.ps1"
@@ -41,6 +42,15 @@ required=(
   ".obsidian/appearance.json" ".obsidian/app.json" ".obsidian/snippets/work-knowledge-navigation.css"
   ".gitignore" ".gitattributes"
 )
+required+=(
+  ".kb-layout-version" "MIGRATION.md" "Vault/首页.md"
+  "Vault/01-知识/INDEX.md" "Vault/02-项目/INDEX.md" "Vault/02-项目/需求中心.md" "Vault/03-案例/INDEX.md"
+  "Vault/.obsidian/app.json" "scripts/kb_layout.py" "scripts/kb-migrate-layout.py" "scripts/migrate-layout.ps1" "scripts/migrate-layout.sh"
+  "Vault/.obsidian/appearance.json" "Vault/.obsidian/snippets/work-knowledge-vault.css"
+)
+for agent_name in codex bluecode vbuddy; do
+  required+=("integrations/$agent_name/work-knowledge/references/layout.md" "integrations/$agent_name/work-knowledge/references/migration.md")
+done
 [[ -f "$root/BOOTSTRAP.md" || -f "$root/.kb-role" ]] || { echo "缺少 BOOTSTRAP.md 或 .kb-role" >&2; exit 1; }
 for path in "${required[@]}"; do [[ -f "$root/$path" ]] || { echo "缺少文件：$path" >&2; exit 1; }; done
 [[ ! -e "$root/skills" ]] || { echo "发现旧的通用 skills/ 目录；当前只支持 integrations/codex、integrations/bluecode 与 integrations/vbuddy。" >&2; exit 1; }
@@ -64,10 +74,10 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
     grep -Fq "$marker" "$root/Home.md" || { echo "Home.md 缺少日常入口：$marker" >&2; exit 1; }
   done
   for agent_name in codex bluecode vbuddy; do
-    for marker in 'name: work-knowledge' 'description:' 'references/ingest.md' 'references/query.md' 'references/project.md' 'references/maintenance.md' 'references/update.md'; do
+    for marker in 'name: work-knowledge' 'description:' 'references/layout.md' 'references/ingest.md' 'references/query.md' 'references/project.md' 'references/maintenance.md' 'references/update.md' 'references/migration.md'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/SKILL.md" || { echo "$agent_name Skill 入口缺少契约：$marker" >&2; exit 1; }
     done
-    for marker in 'Recursively enumerate' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level' 'current branch' 'knowledge health' '查看知识库状态'; do
+    for marker in 'recursively enumerate' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level' 'current branch' 'knowledge health' '查看知识库状态'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/query.md" || { echo "$agent_name 查询规则缺少状态契约：$marker" >&2; exit 1; }
     done
     for marker in 'Templates/' 'complete frontmatter' 'confidence: unverified' 'existing Git working-tree changes' '创建本地 Git 提交' 'separate explicit authorization'; do
@@ -101,7 +111,7 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "pers
   if [[ -e "$bdir" ]]; then
     [[ -f "$bdir/SKILL.md" && -f "$bmarker" ]] || { echo "存在非模板管理的 BlueCode skill：$bdir" >&2; exit 1; }
     grep -Fq "knowledge_base=$expected" "$bmarker" || { echo "BlueCode skill 路径不匹配；请重新安装" >&2; exit 1; }
-    for relative in SKILL.md references/ingest.md references/query.md references/project.md references/maintenance.md references/update.md; do cmp -s "$root/integrations/bluecode/work-knowledge/$relative" "$bdir/$relative" || { echo "BlueCode skill 与仓库版本不一致：$relative" >&2; exit 1; }; done
+    for relative in SKILL.md references/layout.md references/ingest.md references/query.md references/project.md references/maintenance.md references/update.md references/migration.md; do cmp -s "$root/integrations/bluecode/work-knowledge/$relative" "$bdir/$relative" || { echo "BlueCode skill 与仓库版本不一致：$relative" >&2; exit 1; }; done
     echo "BlueCode 全局知识库 skill 检查通过：$bdir/SKILL.md"
   else
     echo "缺少 BlueCode skill；请执行 ./scripts/install-bluecode-skill.sh" >&2; exit 1
@@ -115,7 +125,7 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "pers
   if [[ -e "$vdir" ]]; then
     [[ -f "$vdir/SKILL.md" && -f "$vmarker" ]] || { echo "存在非模板管理的 vBuddy skill：$vdir" >&2; exit 1; }
     grep -Fq "knowledge_base=$expected" "$vmarker" || { echo "vBuddy skill 路径不匹配；请重新安装" >&2; exit 1; }
-    for relative in SKILL.md references/ingest.md references/query.md references/project.md references/maintenance.md references/update.md; do cmp -s "$root/integrations/vbuddy/work-knowledge/$relative" "$vdir/$relative" || { echo "vBuddy skill 与仓库版本不一致：$relative" >&2; exit 1; }; done
+    for relative in SKILL.md references/layout.md references/ingest.md references/query.md references/project.md references/maintenance.md references/update.md references/migration.md; do cmp -s "$root/integrations/vbuddy/work-knowledge/$relative" "$vdir/$relative" || { echo "vBuddy skill 与仓库版本不一致：$relative" >&2; exit 1; }; done
     echo "vBuddy 全局知识库 skill 检查通过：$vdir/SKILL.md"
   else
     echo "缺少 vBuddy skill；请执行 ./scripts/install-vbuddy-skill.sh" >&2; exit 1

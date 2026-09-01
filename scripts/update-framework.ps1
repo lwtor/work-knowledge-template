@@ -25,7 +25,7 @@ try {
             git -c core.quotepath=false -C $target diff --name-only
             git -c core.quotepath=false -C $target ls-files --others --exclude-standard
         ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique
-        $rootFiles = @('README.md','AGENTS.md','Home.md','.gitignore','.gitattributes','.kb-version','.obsidian/appearance.json','.obsidian/app.json','.obsidian/snippets/work-knowledge-navigation.css')
+        $rootFiles = @('README.md','AGENTS.md','Home.md','MIGRATION.md','.gitignore','.gitattributes','.kb-version','.kb-layout-version','.obsidian/appearance.json','.obsidian/app.json','.obsidian/snippets/work-knowledge-navigation.css')
         foreach ($item in $changed) {
             $path = $item.Replace('\','/')
             $allowed = $rootFiles -contains $path -or $path.StartsWith('Templates/') -or $path.StartsWith('scripts/') -or $path.StartsWith('integrations/') -or $path.StartsWith('AI/')
@@ -38,9 +38,9 @@ try {
     $targetVersion = (Get-Content -Raw -LiteralPath (Join-Path $target '.kb-version')).Trim()
     if ($sourceVersion -eq $targetVersion -and -not $ResumeFrameworkUpdate) { Write-Host "当前已是模板版本 $targetVersion，无需更新。"; return }
     if ($sourceVersion -eq $targetVersion) { Write-Host "框架版本均为 $targetVersion；正在续跑此前中断的同版本更新。" }
-    $framework = @('README.md','AGENTS.md','Home.md','AI','Templates','scripts','integrations','.gitignore','.gitattributes','.kb-version')
+    $framework = @('README.md','AGENTS.md','Home.md','AI','Templates','scripts','integrations','MIGRATION.md','.gitignore','.gitattributes','.kb-version')
     $additive = @('Archive\README.md','Knowledge\README.md','Knowledge\INDEX.md','Projects\README.md','Projects\INDEX.md','Projects\TASKS.md','Inbox\README.md','Daily\README.md')
-    $protected = @('Knowledge','Projects','Daily','Inbox','Attachments','Archive','AI\LOCAL.md','AI\写入日志.md','AI\写入日志','.kb-role')
+    $protected = @('Knowledge','Projects','Daily','Inbox','Attachments','Archive','Vault','AI\LOCAL.md','AI\写入日志.md','AI\写入日志','.kb-role','.kb-layout-version')
     $obsidianSourceFiles = @('.obsidian\appearance.json','.obsidian\app.json','.obsidian\snippets\work-knowledge-navigation.css')
     foreach ($relative in $obsidianSourceFiles) { if (-not (Test-Path -LiteralPath (Join-Path $sourceRoot $relative) -PathType Leaf)) { throw "模板缺少 Obsidian 配置：$relative" } }
     Write-Host "框架版本：$targetVersion -> $sourceVersion"
@@ -114,6 +114,10 @@ try {
     Write-Host "框架已更新到 $sourceVersion"
     Write-Host "备份：$backup"
     Write-Host '个人数据、归档、个人规则和写入日志未被覆盖。'
+    $layoutMarker = Join-Path $target '.kb-layout-version'
+    if (-not (Test-Path -LiteralPath $layoutMarker -PathType Leaf)) { [IO.File]::WriteAllText($layoutMarker, "1`n", [Text.UTF8Encoding]::new($false)) }
+    $layoutVersion = (Get-Content -Raw -LiteralPath $layoutMarker).Trim()
+    if ($layoutVersion -eq '1') { Write-Host '目录结构 1 正常可用。若想使用新版 Obsidian 目录，请让 Agent 先按照 MIGRATION.md 生成迁移预览；现在不会创建或写入 Vault。' }
     Write-Host '框架已经更新完成，但这些变更尚未创建 Git 提交。请让 Agent 先展示本次框架变更并询问是否创建本地 Git 提交；不会自动推送。'
 } finally {
     if (Test-Path -LiteralPath $temp) { Remove-Item -LiteralPath $temp -Recurse -Force }

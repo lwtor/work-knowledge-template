@@ -4,8 +4,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-CONTENT_ROOTS = ("Knowledge", "Projects", "Inbox", "Daily")
-NOTE_ROOTS = ("Knowledge", "Projects")
+from kb_layout import detect_layout, layout_path
 VALID_STATUS = {"active", "draft", "deprecated", "archived"}
 VALID_CONFIDENCE = {"unverified", "confirmed"}
 VALID_CONFIDENTIALITY = {"public", "internal", "restricted"}
@@ -15,9 +14,11 @@ def vault_root(value: str | None = None) -> Path:
     return Path(value).expanduser().resolve() if value else Path(__file__).resolve().parent.parent
 
 
-def markdown_files(root: Path, roots=CONTENT_ROOTS):
+def markdown_files(root: Path, roots=None):
+    if roots is None:
+        roots = detect_layout(root).content_roots
     for name in roots:
-        base = root / name
+        base = layout_path(root, name)
         if base.is_dir():
             yield from sorted(p for p in base.rglob("*.md") if p.name not in {"README.md", "INDEX.md", "TASKS.md"})
 

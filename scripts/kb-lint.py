@@ -8,6 +8,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from kb_common import VALID_CONFIDENCE, VALID_CONFIDENTIALITY, VALID_STATUS, frontmatter, markdown_files, relative, vault_root
+from kb_layout import detect_layout, layout_path
 
 REQUIRED = {"id", "type", "status", "title", "created", "updated", "confidence", "confidentiality", "tags", "aliases"}
 
@@ -19,13 +20,14 @@ def main() -> int:
     parser.add_argument("--attachment-mb", type=int, default=10)
     args = parser.parse_args()
     root = vault_root(args.vault)
+    layout = detect_layout(root)
     issues: list[tuple[str, str]] = []
     titles: dict[str, list[str]] = defaultdict(list)
     ids: dict[str, list[str]] = defaultdict(list)
     referenced: set[Path] = set()
     today = date.today()
     all_md = list(root.rglob("*.md"))
-    for path in markdown_files(root, ("Knowledge", "Projects")):
+    for path in markdown_files(root, layout.note_roots):
         meta, text = frontmatter(path)
         rel = relative(root, path)
         missing = sorted(REQUIRED - set(meta))
@@ -50,7 +52,7 @@ def main() -> int:
             if len(paths) > 1:
                 issues.append(("WARNING", f"duplicate {kind}={key}: {', '.join(paths)}"))
     cutoff = datetime.now().timestamp() - timedelta(days=args.inbox_days).total_seconds()
-    inbox = root / "Inbox"
+    inbox = layout_path(root, layout.inbox)
     if inbox.is_dir():
         for path in inbox.rglob("*.md"):
             if path.name != "README.md" and path.stat().st_mtime < cutoff:
@@ -71,7 +73,7 @@ def main() -> int:
             referenced.add(target)
             if not target.exists():
                 issues.append(("WARNING", f"link {relative(root, path)}: 找不到 {raw}"))
-    attachments = root / "Attachments"
+    attachments = layout_path(root, layout.attachments)
     if attachments.is_dir():
         limit = args.attachment_mb * 1024 * 1024
         for path in (p for p in attachments.rglob("*") if p.is_file()):

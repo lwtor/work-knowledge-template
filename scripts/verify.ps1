@@ -2,6 +2,11 @@
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath $KnowledgeBaseRoot).Path
 $required = @('README.md','Home.md','AGENTS.md','AI\启动配置.md','AI\AI-GUIDE.md','AI\知识维护.md','AI\写入日志\README.md','AI\待复核清单.md','Archive\README.md','Knowledge\README.md','Knowledge\INDEX.md','Projects\README.md','Projects\INDEX.md','Projects\TASKS.md','Inbox\README.md','Daily\README.md','Templates\知识笔记.md','Templates\项目总览.md','Templates\问题解决.md','Templates\日常记录.md','scripts\install-codex-skill.ps1','scripts\install-codex-skill.sh','scripts\install-bluecode-skill.ps1','scripts\install-bluecode-skill.sh','scripts\install-vbuddy-skill.ps1','scripts\install-vbuddy-skill.sh','scripts\verify.ps1','scripts\verify.sh','scripts\update-framework.ps1','scripts\kb_common.py','scripts\kb-index.py','scripts\kb-lint.py','scripts\kb-secret-scan.py','AI\框架更新.md','integrations\codex\work-knowledge\SKILL.md','integrations\codex\work-knowledge\references\ingest.md','integrations\codex\work-knowledge\references\query.md','integrations\codex\work-knowledge\references\project.md','integrations\codex\work-knowledge\references\maintenance.md','integrations\codex\work-knowledge\references\update.md','integrations\bluecode\work-knowledge\SKILL.md','integrations\bluecode\work-knowledge\references\ingest.md','integrations\bluecode\work-knowledge\references\query.md','integrations\bluecode\work-knowledge\references\project.md','integrations\bluecode\work-knowledge\references\maintenance.md','integrations\bluecode\work-knowledge\references\update.md','integrations\vbuddy\work-knowledge\SKILL.md','integrations\vbuddy\work-knowledge\references\ingest.md','integrations\vbuddy\work-knowledge\references\query.md','integrations\vbuddy\work-knowledge\references\project.md','integrations\vbuddy\work-knowledge\references\maintenance.md','integrations\vbuddy\work-knowledge\references\update.md','.obsidian\appearance.json','.obsidian\app.json','.obsidian\snippets\work-knowledge-navigation.css','.gitignore')
+$required += @('.kb-layout-version','MIGRATION.md','Vault\首页.md','Vault\01-知识\INDEX.md','Vault\02-项目\INDEX.md','Vault\02-项目\需求中心.md','Vault\03-案例\INDEX.md','Vault\.obsidian\app.json','scripts\kb_layout.py','scripts\kb-migrate-layout.py','scripts\migrate-layout.ps1','scripts\migrate-layout.sh')
+$required += @('Templates\需求主页.md','Templates\案例复盘.md','Templates\快速记录.md','Templates\文档学习笔记.md','Vault\.obsidian\appearance.json','Vault\.obsidian\snippets\work-knowledge-vault.css')
+foreach ($agentName in @('codex','bluecode','vbuddy')) {
+  $required += @("integrations\$agentName\work-knowledge\references\layout.md","integrations\$agentName\work-knowledge\references\migration.md")
+}
 if (-not (Test-Path -LiteralPath (Join-Path $root 'BOOTSTRAP.md') -PathType Leaf) -and -not (Test-Path -LiteralPath (Join-Path $root '.kb-role') -PathType Leaf)) { throw '缺少 BOOTSTRAP.md 或 .kb-role' }
 foreach ($relative in $required) { if (-not (Test-Path -LiteralPath (Join-Path $root $relative) -PathType Leaf)) { throw "缺少文件：$relative" } }
 if (Test-Path -LiteralPath (Join-Path $root 'skills')) { throw '发现旧的通用 skills 目录；当前只支持 integrations\codex、integrations\bluecode 与 integrations\vbuddy。' }
@@ -19,9 +24,9 @@ if ($repoRole -eq 'template') {
   foreach ($marker in @('查看知识库状态','我现在该去哪里','work-knowledge-navigation')) { if (-not $homePage.Contains($marker)) { throw "Home.md 缺少日常入口：$marker" } }
   foreach ($agentName in @('codex','bluecode','vbuddy')) {
     $skillRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root "integrations\$agentName\work-knowledge\SKILL.md")
-    foreach ($marker in @('name: work-knowledge','description:','references/ingest.md','references/query.md','references/project.md','references/maintenance.md','references/update.md')) { if (-not $skillRules.Contains($marker)) { throw "$agentName Skill 入口缺少契约：$marker" } }
+    foreach ($marker in @('name: work-knowledge','description:','references/layout.md','references/ingest.md','references/query.md','references/project.md','references/maintenance.md','references/update.md','references/migration.md')) { if (-not $skillRules.Contains($marker)) { throw "$agentName Skill 入口缺少契约：$marker" } }
     $queryRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root "integrations\$agentName\work-knowledge\references\query.md")
-    foreach ($marker in @('Recursively enumerate','.kb-version','raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version','Do not inspect only the first directory level','current branch','knowledge health','查看知识库状态')) { if (-not $queryRules.Contains($marker)) { throw "$agentName 查询规则缺少状态契约：$marker" } }
+    foreach ($marker in @('recursively enumerate','.kb-version','raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version','Do not inspect only the first directory level','current branch','knowledge health','查看知识库状态')) { if (-not $queryRules.Contains($marker)) { throw "$agentName 查询规则缺少状态契约：$marker" } }
     $ingestRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root "integrations\$agentName\work-knowledge\references\ingest.md")
     foreach ($marker in @('Templates/','complete frontmatter','confidence: unverified','existing Git working-tree changes','创建本地 Git 提交','separate explicit authorization')) { if (-not $ingestRules.Contains($marker)) { throw "$agentName 写入规则缺少收尾契约：$marker" } }
     $updateRules = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $root "integrations\$agentName\work-knowledge\references\update.md")
@@ -44,7 +49,7 @@ if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -L
   $actualRoot = [IO.Path]::GetFullPath($pathLine.Substring('knowledge_base='.Length)).TrimEnd('\')
   $expectedRoot = [IO.Path]::GetFullPath($root).TrimEnd('\')
   if (-not $actualRoot.Equals($expectedRoot,[StringComparison]::OrdinalIgnoreCase)) { throw "Codex Skill 路径不匹配：$actualRoot" }
-  foreach ($relative in @('SKILL.md','references\ingest.md','references\query.md','references\project.md','references\maintenance.md','references\update.md')) {
+  foreach ($relative in @('SKILL.md','references\layout.md','references\ingest.md','references\query.md','references\project.md','references\maintenance.md','references\update.md','references\migration.md')) {
     $sourceFile = Join-Path $root ('integrations\codex\work-knowledge\' + $relative)
     $installedFile = Join-Path $installed $relative
     if (-not (Test-Path -LiteralPath $installedFile -PathType Leaf)) { throw "已安装 Codex Skill 缺少文件：$relative" }
@@ -65,7 +70,7 @@ if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -L
     $bluecodeActualRoot = [IO.Path]::GetFullPath($bluecodePathLine.Substring('knowledge_base='.Length)).TrimEnd('\')
     $expectedRoot = [IO.Path]::GetFullPath($root).TrimEnd('\')
     if (-not $bluecodeActualRoot.Equals($expectedRoot,[StringComparison]::OrdinalIgnoreCase)) { throw "BlueCode Skill 路径不匹配：$bluecodeActualRoot" }
-    foreach ($relative in @('SKILL.md','references\ingest.md','references\query.md','references\project.md','references\maintenance.md','references\update.md')) {
+    foreach ($relative in @('SKILL.md','references\layout.md','references\ingest.md','references\query.md','references\project.md','references\maintenance.md','references\update.md','references\migration.md')) {
       $sourceFile = Join-Path $root ('integrations\bluecode\work-knowledge\' + $relative)
       $installedFile = Join-Path $bluecodeInstalled $relative
       if (-not (Test-Path -LiteralPath $installedFile -PathType Leaf)) { throw "已安装 BlueCode Skill 缺少文件：$relative" }
@@ -87,7 +92,7 @@ if ((Test-Path -LiteralPath $roleFile -PathType Leaf) -and ((Get-Content -Raw -L
     $vbuddyActualRoot = [IO.Path]::GetFullPath($vbuddyPathLine.Substring('knowledge_base='.Length)).TrimEnd('\')
     $expectedRoot = [IO.Path]::GetFullPath($root).TrimEnd('\')
     if (-not $vbuddyActualRoot.Equals($expectedRoot,[StringComparison]::OrdinalIgnoreCase)) { throw "vBuddy Skill 路径不匹配：$vbuddyActualRoot" }
-    foreach ($relative in @('SKILL.md','references\ingest.md','references\query.md','references\project.md','references\maintenance.md','references\update.md')) {
+    foreach ($relative in @('SKILL.md','references\layout.md','references\ingest.md','references\query.md','references\project.md','references\maintenance.md','references\update.md','references\migration.md')) {
       $sourceFile = Join-Path $root ('integrations\vbuddy\work-knowledge\' + $relative)
       $installedFile = Join-Path $vbuddyInstalled $relative
       if (-not (Test-Path -LiteralPath $installedFile -PathType Leaf)) { throw "已安装 vBuddy Skill 缺少文件：$relative" }

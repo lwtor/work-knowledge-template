@@ -15,9 +15,12 @@ This skill is for BlueCode only. Do not claim or imply compatibility with other 
 
 Before operating, read `AGENTS.md`, `AI/启动配置.md`, `AI/AI-GUIDE.md`, and `AI/LOCAL.md` from the resolved root.
 
+Before choosing any content path, read `references/layout.md` and resolve `.kb-layout-version`. Never mix layout 1 and layout 2 paths. If `.kb-migration/state.json` exists, pause ordinary writes and tell the user exactly how to resume the migration.
+
 ## Route the request
 
 - To update the knowledge-base framework itself, read `references/update.md` first. This route is distinct from updating a note or project record.
+- To preview or perform the optional personal-data directory migration, read `references/migration.md`. Framework update is not migration authorization.
 - To save, summarize, remember, organize, or update conversation material, read `references/ingest.md`.
 - To retrieve or search existing knowledge, read `references/query.md`.
 - To create or maintain project context, links, progress, or tasks, read `references/project.md`.

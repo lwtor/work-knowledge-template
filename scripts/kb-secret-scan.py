@@ -5,7 +5,8 @@ import argparse
 import re
 from pathlib import Path
 
-from kb_common import CONTENT_ROOTS, relative, vault_root
+from kb_common import relative, vault_root
+from kb_layout import detect_layout, layout_path
 
 RULES = {
     "private-key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
@@ -17,8 +18,9 @@ TEXT_SUFFIXES = {".md", ".txt", ".json", ".yaml", ".yml", ".xml", ".csv", ".ini"
 
 
 def text_files(root: Path):
-    for name in (*CONTENT_ROOTS, "Archive", "Attachments"):
-        base = root / name
+    layout = detect_layout(root)
+    for name in (*layout.content_roots, layout.archive, layout.attachments):
+        base = layout_path(root, name)
         if not base.is_dir():
             continue
         for path in base.rglob("*"):

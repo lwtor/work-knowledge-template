@@ -1,4 +1,4 @@
-[![Framework v0.7.14](https://img.shields.io/badge/framework-v0.7.14-2563eb?style=for-the-badge)](.kb-version)
+[![Framework v0.8.0](https://img.shields.io/badge/framework-v0.8.0-2563eb?style=for-the-badge)](.kb-version)
 
 <div align="center">
 
@@ -87,12 +87,14 @@ https://github.com/lwtor/work-knowledge-template/blob/main/BOOTSTRAP.md
 
 ```text
 work-knowledge/
-├─ Knowledge/       跨项目可复用知识
-├─ Projects/        项目资料、过程记录和待办
-├─ Inbox/           尚未整理的临时内容
-├─ Daily/           日常工作记录
-├─ Archive/         经确认归档的历史内容
-├─ Attachments/     图片、文档等附件（个人仓库中使用）
+├─ Vault/           Obsidian 只打开这个目录
+│  ├─ 01-知识/      跨项目可复用知识
+│  ├─ 02-项目/      项目知识、需求和项目问题
+│  ├─ 03-案例/      问题排查与 AI 协作复盘
+│  ├─ 04-收集箱/    尚未整理的快速记录
+│  ├─ 05-工作记录/  日常工作过程
+│  ├─ 90-归档/      经确认归档的历史
+│  └─ 附件/         图片和文档
 ├─ Templates/       知识、项目、问题解决和日常记录模板
 ├─ AI/              Agent 规则、个人覆盖层和写入日志
 ├─ integrations/    AI 工具接入文件
@@ -113,7 +115,7 @@ work-knowledge/
 - 新增或修改正式知识前，Agent 必须先展示预览并获得确认。
 - 删除、覆盖、合并、归档、批量重命名和远程上传需要单独授权。
 - 框架更新只操作白名单路径，并在执行前创建备份。
-- `Knowledge/`、`Projects/`、`Daily/`、`Inbox/`、`Attachments/`、`Archive/`、`AI/LOCAL.md` 和写入日志属于受保护数据。
+- 当前布局解析出的全部个人内容目录、`Vault/`、`AI/LOCAL.md` 和写入日志都属于受保护数据；框架更新不会移动或覆盖它们。
 
 ## 🧰 长期维护
 
@@ -144,7 +146,7 @@ python scripts/kb-index.py
 
 ## 💎 Obsidian
 
-安装 [Obsidian](https://obsidian.md/) 后，将私人知识库的本地目录作为 Vault 打开，再进入 `Home.md`。模板默认启用 `work-knowledge-navigation` CSS snippet，在侧栏隐藏维护用框架目录，只保留知识、项目、Inbox、Daily 和归档等日常入口；可在“设置 → 外观 → CSS 代码片段”中随时关闭并恢复完整目录。Obsidian 是推荐浏览界面，但不是运行知识库的必要依赖；所有内容始终是普通 Markdown 文件。
+安装 [Obsidian](https://obsidian.md/) 后，新建的私人知识库请打开本地仓库中的 `Vault` 子目录，再进入 `首页.md`。旧私人库升级框架后仍可按原目录正常使用；只有用户明确要求并确认 `MIGRATION.md` 的迁移预览后，才会移动个人内容。框架更新不会自动创建或写入私人库的 `Vault`。Obsidian 是推荐浏览界面，但不是运行知识库的必要依赖。
 
 ## 📚 关键文档
 
@@ -161,7 +163,7 @@ python scripts/kb-index.py
 
 <div align="center">
 
-当前框架版本：**0.7.14**
+当前框架版本：**0.8.0**
 
 模板负责提供能力，私人仓库始终由用户自己控制。
 

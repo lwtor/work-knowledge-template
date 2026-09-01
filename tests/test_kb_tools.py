@@ -11,6 +11,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def load(name: str, path: Path):
+    script_dir = str(path.parent)
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
@@ -91,6 +94,61 @@ confidentiality: internal
             transfer.check_package_conflict(self.root, divergent)
         already_applied = dict(divergent, target_manifest_sha256=transfer.manifest_hash(current))
         transfer.check_package_conflict(self.root, already_applied)
+
+    def test_layout_two_index_and_lint(self):
+        (self.root / ".kb-layout-version").write_text("2\n", encoding="utf-8")
+        for name in ("01-知识", "02-项目", "03-案例", "04-收集箱", "05-工作记录", "90-归档", "附件"):
+            (self.root / "Vault" / name).mkdir(parents=True, exist_ok=True)
+        note = """---
+id: kb-v2
+type: knowledge
+status: active
+title: Layout Two
+created: 2026-08-31
+updated: 2026-08-31
+confidence: confirmed
+confidentiality: internal
+tags: []
+aliases: []
+---
+# Layout Two
+"""
+        (self.root / "Vault" / "01-知识" / "layout-two.md").write_text(note, encoding="utf-8")
+        requirement = note.replace("kb-v2", "req-v2").replace("type: knowledge", "type: requirement").replace("Layout Two", "Requirement Two")
+        project = self.root / "Vault" / "02-项目" / "Demo" / "需求"
+        project.mkdir(parents=True)
+        (project / "requirement.md").write_text(requirement, encoding="utf-8")
+        indexed = self.run_tool("kb-index.py")
+        self.assertEqual(indexed.returncode, 0, indexed.stdout + indexed.stderr)
+        self.assertIn("Layout Two", (self.root / "Vault" / "01-知识" / "INDEX.md").read_text(encoding="utf-8"))
+        self.assertIn("Requirement Two", (self.root / "Vault" / "02-项目" / "需求中心.md").read_text(encoding="utf-8"))
+        linted = self.run_tool("kb-lint.py")
+        self.assertEqual(linted.returncode, 0, linted.stdout + linted.stderr)
+
+    def test_layout_migration_requires_apply_and_confirmation(self):
+        (self.root / ".kb-role").write_text("personal\n", encoding="utf-8")
+        (self.root / "Knowledge" / "old.md").write_text("# Old\n\n[[Projects/Demo]]\n", encoding="utf-8")
+        (self.root / ".obsidian").mkdir()
+        (self.root / ".obsidian" / "appearance.json").write_text('{"enabledCssSnippets":["personal"]}\n', encoding="utf-8")
+        subprocess.run(["git", "init", str(self.root)], check=True, capture_output=True)
+        subprocess.run(["git", "-C", str(self.root), "config", "user.email", "test@example.invalid"], check=True)
+        subprocess.run(["git", "-C", str(self.root), "config", "user.name", "Test"], check=True)
+        subprocess.run(["git", "-C", str(self.root), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(self.root), "commit", "-m", "fixture"], check=True, capture_output=True)
+        command = [sys.executable, str(ROOT / "scripts" / "kb-migrate-layout.py"), "--root", str(self.root)]
+        preview = subprocess.run(command, text=True, capture_output=True, check=False)
+        self.assertEqual(preview.returncode, 0, preview.stdout + preview.stderr)
+        self.assertTrue((self.root / "Knowledge" / "old.md").is_file())
+        migrated = subprocess.run(command + ["--apply", "--confirm"], text=True, capture_output=True, check=False)
+        self.assertEqual(migrated.returncode, 0, migrated.stdout + migrated.stderr)
+        self.assertTrue((self.root / "Vault" / "01-知识" / "old.md").is_file())
+        migrated_text = (self.root / "Vault" / "01-知识" / "old.md").read_text(encoding="utf-8")
+        self.assertIn("[[02-项目/Demo]]", migrated_text)
+        appearance = (self.root / "Vault" / ".obsidian" / "appearance.json").read_text(encoding="utf-8")
+        self.assertIn('"personal"', appearance)
+        self.assertIn('"work-knowledge-vault"', appearance)
+        self.assertTrue((self.root / "Vault" / ".obsidian" / "snippets" / "work-knowledge-vault.css").is_file())
+        self.assertEqual((self.root / ".kb-layout-version").read_text(encoding="utf-8").strip(), "2")
 
 
 if __name__ == "__main__":

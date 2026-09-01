@@ -37,7 +37,7 @@ if [[ -n "$(git -C "$root" status --porcelain)" ]]; then
   while IFS= read -r path; do
     [[ -z "$path" ]] && continue
     case "$path" in
-      README.md|AGENTS.md|Home.md|.gitignore|.gitattributes|.kb-version|Templates/*|scripts/*|integrations/*|AI/*|.obsidian/appearance.json|.obsidian/app.json|.obsidian/snippets/work-knowledge-navigation.css) ;;
+      README.md|AGENTS.md|Home.md|MIGRATION.md|.gitignore|.gitattributes|.kb-version|.kb-layout-version|Templates/*|scripts/*|integrations/*|AI/*|.obsidian/appearance.json|.obsidian/app.json|.obsidian/snippets/work-knowledge-navigation.css) ;;
       *) echo "错误：续跑已停止，发现框架白名单之外的修改：$path" >&2; exit 1 ;;
     esac
     case "$path" in
@@ -50,9 +50,11 @@ source_version="$(tr -d '[:space:]' < "$source_dir/.kb-version")"
 target_version="$(tr -d '[:space:]' < "$root/.kb-version")"
 if [[ "$source_version" == "$target_version" && "$resume" != "yes" ]]; then echo "当前已是模板版本 $target_version，无需更新。"; exit 0; fi
 [[ "$source_version" != "$target_version" ]] || echo "框架版本均为 $target_version；正在续跑此前中断的同版本更新。"
-framework=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "integrations" ".gitignore" ".gitattributes" ".kb-version")
+framework=("README.md" "AGENTS.md" "Home.md" "AI" "Templates" "scripts" "integrations" "MIGRATION.md" ".gitignore" ".gitattributes" ".kb-version")
 additive=("Archive/README.md" "Knowledge/README.md" "Knowledge/INDEX.md" "Projects/README.md" "Projects/INDEX.md" "Projects/TASKS.md" "Inbox/README.md" "Daily/README.md")
 obsidian_files=(".obsidian/appearance.json" ".obsidian/app.json" ".obsidian/snippets/work-knowledge-navigation.css")
+echo "将保护：Knowledge, Projects, Daily, Inbox, Attachments, Archive, Vault, AI/LOCAL.md, 写入日志, .kb-role, .kb-layout-version"
+echo "框架更新不会迁移或写入个人内容目录。"
 for path in "${framework[@]}"; do [[ -e "$source_dir/$path" ]] || { echo "错误：模板缺少 $path。" >&2; exit 1; }; done
 for path in "${obsidian_files[@]}"; do [[ -f "$source_dir/$path" ]] || { echo "错误：模板缺少 Obsidian 配置：$path。" >&2; exit 1; }; done
 backup="$root/.kb-backups/framework-$(date +%Y%m%d-%H%M%S)"
@@ -91,4 +93,8 @@ grep -Fq 'work-knowledge-navigation' "$root/.obsidian/appearance.json" || echo '
 echo "框架已更新：$target_version -> $source_version"
 echo "备份：$backup"
 echo "个人数据、归档、个人规则和写入日志未被覆盖。"
+[[ -f "$root/.kb-layout-version" ]] || printf '1\n' > "$root/.kb-layout-version"
+if [[ "$(tr -d '[:space:]' < "$root/.kb-layout-version")" == "1" ]]; then
+  echo "目录结构 1 正常可用。若想使用新版 Obsidian 目录，请让 Agent 先按照 MIGRATION.md 生成迁移预览；现在不会创建或写入 Vault。"
+fi
 echo "框架已经更新完成，但这些变更尚未创建 Git 提交。请让 Agent 先展示本次框架变更并询问是否创建本地 Git 提交；不会自动推送。"
