@@ -9,13 +9,15 @@
 ### 1. 集成文件 `integrations/<agent>/work-knowledge/`
 
 - `SKILL.md`：frontmatter 含 `name: work-knowledge` 和带足中英触发词的 `description`（触发词命中率决定 Agent 何时调用技能）；正文含技能定位方式（读 `.managed-by-work-knowledge-template` 取 `knowledge_base`）、加载语义说明、路由表。
+- `.skill-version`：该 Agent 集成的独立版本号；行为、触发或加载契约变化时递增，不得直接用框架版本替代。
 - `references/` 包含写入、查询、项目、维护、更新、布局、迁移、内容分类和交互规则。`interaction.md` 与 `content-routing.md` 不得自行编写：权威源位于 `integrations/shared/work-knowledge/references/`，运行 `python scripts/sync-agent-interaction.py` 生成全部 Agent 副本；新增 Agent 时同步更新脚本中的 Agent 列表。验证器会逐字检查，任何副本漂移都必须失败。其他 reference 可以从现有集成复制公共契约作为起点，但必须按目标 Agent 的术语和能力审查差异。
 
 ### 2. 安装脚本 `scripts/install-<agent>-skill.ps1` 和 `.sh`
 
 - 目标目录和可选环境变量必须依据该 Agent 的官方说明或实际客户端验证分别确定；不得把 `~/.<agent>/skills/work-knowledge` 当作通用公式。将已确认的路径与加载方式写入该 Agent 自己的安装脚本和文档。
 - 先校验目标存在时必须含本模板 marker（`.managed-by-work-knowledge-template`），否则拒绝，防误删用户自建技能。
-- 清空目标目录（保留 marker）→ 复制 → 写 marker（`manager=work-knowledge-template` + `knowledge_base=<绝对路径>`）。
+- 先完整复制到目标同级临时目录并生成 marker，校验成功后再替换旧目录；不得先删除可用旧版再开始复制。
+- marker 至少包含 `manager`、`knowledge_base`、`framework_version`、`skill_version`、`skill_rules_sha256` 和 `installed_at`。
 - 结尾输出加载提示，注明该 Agent 的生效方式（见"加载语义"）。
 
 ### 3. 验证脚本 `scripts/verify.ps1` 和 `scripts/verify.sh`

@@ -30,7 +30,7 @@
 3. 预览结束后使用独立的“⚠️ 需要你确认”区块收尾，将更新操作编号为 `1`，说明不会提交、推送或迁移个人目录；同时支持数字回复 `1` 和复制回复 `确认执行框架更新，不提交、不推送。`。拒绝或未确认时不修改任何文件，个人仓库继续按原版本使用。
 4. 确认后从与本文件相同的最新模板版本运行更新器：Windows 使用模板的 `scripts/update-framework.ps1` 并显式传入个人仓库路径；macOS/Linux 使用模板的 `scripts/update-framework.sh --target`。不得因为个人仓库已有旧更新器而优先运行旧文件。
 5. 更新器必须先备份旧框架，只复制允许范围，并恢复个人规则与写入日志；旧版单文件日志不得丢失。
-6. 当前 Agent 是 Codex、BlueCode 或 vBuddy 时，使用更新后的个人仓库自身安装脚本重新安装对应的全局 Skill：Codex 用 `scripts/install-codex-skill.ps1`（Windows）/ `scripts/install-codex-skill.sh`（macOS/Linux），BlueCode 用 `scripts/install-bluecode-skill.ps1` / `scripts/install-bluecode-skill.sh`，vBuddy 用 `scripts/install-vbuddy-skill.ps1` / `scripts/install-vbuddy-skill.sh`。不得从模板目录直接安装。其他 Agent 跳过此步。BlueCode 安装或重装后必须提示用户重启 BlueCode 进程，新 Skill 才会被加载；vBuddy 提示用户新开一个会话即可。
+6. 当前 Agent 是 Codex、BlueCode 或 vBuddy 时，使用更新后的个人仓库自身安装脚本重新安装对应的全局 Skill，并核对 marker 中的 `framework_version`、`skill_version` 和 `skill_rules_sha256`。不得从模板目录直接安装。Codex 完成后必须提示新开任务，BlueCode 必须重启进程，vBuddy 必须新开会话；当前会话或进程不得声称热加载了新规则。其他 Agent 跳过此步。
 7. 使用更新后的个人仓库自身验证脚本并明确当前 Agent：Windows 使用 `scripts/verify.ps1 -Agent Codex`、`-Agent BlueCode` 或 `-Agent Vbuddy`；macOS/Linux 使用 `scripts/verify.sh --agent codex`、`--agent bluecode` 或 `--agent vbuddy`。不得因另一种可选 Agent 未安装或存在其他来源的 Skill 而失败。
 8. 展示变更摘要，并明确区分“框架文件已更新”和“Git 尚未记录本次更新”。若产生未提交框架变更，把“创建框架更新的本地提交”放入回复末尾独立的“➡️ 可选的下一步”区块，同时支持数字回复和复制回复 `确认展示框架变更并创建本地提交，不推送。`。推送仍需再次单独授权。
 9. 若私人库没有 `.kb-layout-version`，只写入值 `1`，表示继续使用旧目录；不得复制模板的值 `2`。布局 1 必须报告为“正常可用”。框架更新完成后，把“生成目录迁移预览”作为同一操作区块中的另一个编号选项，同时支持数字回复和复制回复 `确认生成目录迁移预览。`，并说明不会移动文件、提交或推送。

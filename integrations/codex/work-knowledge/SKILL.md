@@ -1,6 +1,6 @@
 ---
 name: work-knowledge
-description: Use this Codex integration to record, summarize, organize, retrieve, search, inspect status, or update the user's existing personal work knowledge base, including requests such as “知识库状态”. Do not use its stored path for bootstrap, create, initialize, install, clone, or connect requests; those follow BOOTSTRAP.md and the current request.
+description: Use this Codex integration to record, summarize, organize, retrieve, search, inspect status, or update the user's existing personal work knowledge base. Triggers include “知识库”, “写入知识库”, “记录到知识库”, “存到知识库”, and “知识库状态”. Do not use its stored path for bootstrap, create, initialize, install, clone, or connect requests; those follow BOOTSTRAP.md and the current request.
 ---
 
 # Codex Work Knowledge
@@ -12,6 +12,8 @@ This skill is for Codex only. Do not claim or imply compatibility with other age
 - When installed globally, read `.managed-by-work-knowledge-template` beside this file and use its `knowledge_base` value as the canonical root.
 - When read from this repository before installation, the knowledge-base root is three directories above this skill folder.
 - For bootstrap, creation, initialization, installation, clone, or connection requests, ignore any stored path and follow `BOOTSTRAP.md`. Ask once if the current request does not provide a real parent directory.
+
+For an explicit knowledge-base request, the marker root is mandatory and the current workspace must not replace it. Compare this installed `.skill-version` with the codex integration under the resolved personal root. If they differ, report that the installed Skill is stale and offer its repository installer; do not claim the current task hot-reloaded a newly installed Skill. Open a new Codex task after installation.
 
 Before operating, read `AGENTS.md`, `AI/启动配置.md`, `AI/AI-GUIDE.md`, and `AI/LOCAL.md` from the resolved root.
 

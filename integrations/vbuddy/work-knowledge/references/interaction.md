@@ -29,6 +29,7 @@ Whenever user confirmation is required, or one or more optional actions are avai
 ## Standard copyable replies
 
 - Content or project write: `确认按上述预览写入知识库，不提交、不推送。`
+- Skill reinstall: `确认使用当前私人知识库中的安装脚本重新安装当前 Agent 的 work-knowledge Skill。`
 - Archive, delete, merge, and move: use the action-specific replies in `references/maintenance.md`.
 - Push: first display the commits, remote, and target branch; use `确认将上述本地提交推送到已显示的远程分支。`. Commit and push never share one authorization.
 

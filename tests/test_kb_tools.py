@@ -170,6 +170,33 @@ aliases: []
         self.assertIn("case_id:", transcript_template)
         self.assertIn("related_case: 案例复盘.md", transcript_template)
 
+    def test_target_check_rejects_current_project_and_accepts_layout_areas(self):
+        (self.root / ".git").mkdir()
+        (self.root / ".kb-role").write_text("personal\n", encoding="utf-8")
+        checker = ROOT / "scripts" / "kb-target-check.py"
+        accepted = subprocess.run(
+            [sys.executable, str(checker), "--vault", str(self.root), "--target", "Knowledge/ok.md", "--area", "knowledge"],
+            text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
+        source_project = self.root.parent / "small-v" / "doc" / "wrong.md"
+        rejected = subprocess.run(
+            [sys.executable, str(checker), "--vault", str(self.root), "--target", str(source_project), "--area", "project"],
+            text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(rejected.returncode, 2)
+        self.assertIn("越出知识库根目录", rejected.stderr)
+
+    def test_skill_info_reports_independent_version_and_hash(self):
+        info = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "kb-skill-info.py"), "--root", str(ROOT), "--agent", "codex"],
+            text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(info.returncode, 0, info.stdout + info.stderr)
+        self.assertIn("framework_version=", info.stdout)
+        self.assertIn("skill_version=1.0.0", info.stdout)
+        self.assertRegex(info.stdout, r"skill_rules_sha256=[0-9a-f]{64}")
+
 
 if __name__ == "__main__":
     unittest.main()

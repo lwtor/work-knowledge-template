@@ -19,7 +19,7 @@ required=(
   "scripts/install-vbuddy-skill.sh"
   "scripts/verify.ps1"
   "scripts/update-framework.ps1"
-  "scripts/kb_common.py" "scripts/kb-index.py" "scripts/kb-lint.py" "scripts/kb-secret-scan.py"
+  "scripts/kb_common.py" "scripts/kb-index.py" "scripts/kb-lint.py" "scripts/kb-secret-scan.py" "scripts/kb-target-check.py" "scripts/kb-skill-info.py"
   "AI/框架更新.md"
   "integrations/codex/work-knowledge/SKILL.md"
   "integrations/codex/work-knowledge/references/ingest.md"
@@ -50,7 +50,7 @@ required+=(
   "integrations/shared/work-knowledge/references/interaction.md" "integrations/shared/work-knowledge/references/content-routing.md" "scripts/sync-agent-interaction.py"
 )
 for agent_name in codex bluecode vbuddy; do
-  required+=("integrations/$agent_name/work-knowledge/references/layout.md" "integrations/$agent_name/work-knowledge/references/migration.md" "integrations/$agent_name/work-knowledge/references/interaction.md" "integrations/$agent_name/work-knowledge/references/content-routing.md")
+  required+=("integrations/$agent_name/work-knowledge/references/layout.md" "integrations/$agent_name/work-knowledge/references/migration.md" "integrations/$agent_name/work-knowledge/references/interaction.md" "integrations/$agent_name/work-knowledge/references/content-routing.md" "integrations/$agent_name/work-knowledge/.skill-version")
 done
 [[ -f "$root/BOOTSTRAP.md" || -f "$root/.kb-role" ]] || { echo "缺少 BOOTSTRAP.md 或 .kb-role" >&2; exit 1; }
 for path in "${required[@]}"; do [[ -f "$root/$path" ]] || { echo "缺少文件：$path" >&2; exit 1; }; done
@@ -75,21 +75,21 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
     grep -Fq "$marker" "$root/Home.md" || { echo "Home.md 缺少日常入口：$marker" >&2; exit 1; }
   done
   for agent_name in codex bluecode vbuddy; do
-    for marker in 'name: work-knowledge' 'description:' 'references/layout.md' 'references/interaction.md' 'references/content-routing.md' 'references/ingest.md' 'references/query.md' 'references/project.md' 'references/maintenance.md' 'references/update.md' 'references/migration.md'; do
+    for marker in 'name: work-knowledge' 'description:' 'references/layout.md' 'references/interaction.md' 'references/content-routing.md' '.skill-version' 'references/ingest.md' 'references/query.md' 'references/project.md' 'references/maintenance.md' 'references/update.md' 'references/migration.md'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/SKILL.md" || { echo "$agent_name Skill 入口缺少契约：$marker" >&2; exit 1; }
     done
     cmp -s "$root/integrations/shared/work-knowledge/references/interaction.md" "$root/integrations/$agent_name/work-knowledge/references/interaction.md" || { echo "$agent_name 交互规则与共享权威文件不一致；请运行 python scripts/sync-agent-interaction.py" >&2; exit 1; }
     cmp -s "$root/integrations/shared/work-knowledge/references/content-routing.md" "$root/integrations/$agent_name/work-knowledge/references/content-routing.md" || { echo "$agent_name 内容分类规则与共享权威文件不一致；请运行 python scripts/sync-agent-interaction.py" >&2; exit 1; }
-    for marker in 'AI 使用案例' 'Do not ask them to reconfirm' 'Do not split every case by default' '原始记录' 'one shared case_id' '记录类型' 'KSP'; do
+    for marker in '## Destination gate' 'kb-target-check.py' 'AI 使用案例' 'Do not ask them to reconfirm' 'Do not split every case by default' '原始记录' 'one shared case_id' '记录类型' 'KSP'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/content-routing.md" || { echo "$agent_name 内容分类规则缺少契约：$marker" >&2; exit 1; }
     done
     for marker in '## ⚠️ 需要你确认' '## ➡️ 可选的下一步' 'Reply `0`' '回复数字' 'most recent action block' 'recompute all currently applicable actions' 'Choosing one item does not dismiss the others' '确认按上述预览写入知识库，不提交、不推送' '确认将上述本地提交推送到已显示的远程分支'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/interaction.md" || { echo "$agent_name 强提示规则缺少契约：$marker" >&2; exit 1; }
     done
-    for marker in 'recursively enumerate' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level' 'current branch' 'knowledge health' '查看知识库状态' 'Recompute the pending-action queue' 'Choosing one item does not dismiss the others'; do
+    for marker in 'recursively enumerate' 'skill_version' 'skill_rules_sha256' '重新安装当前 Agent 的知识库 Skill' '.kb-version' 'raw.githubusercontent.com/lwtor/work-knowledge-template/main/.kb-version' 'Do not inspect only the first directory level' 'current branch' 'knowledge health' '查看知识库状态' 'Recompute the pending-action queue' 'Choosing one item does not dismiss the others'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/query.md" || { echo "$agent_name 查询规则缺少状态契约：$marker" >&2; exit 1; }
     done
-    for marker in 'references/content-routing.md' 'Templates/' 'complete frontmatter' 'confidence: unverified' '记录类型' '目标位置' '记录重点' 'explicitly requested linked case transcript' 'existing Git working-tree changes' 'numbered required-confirmation block' '确认按上述预览写入知识库，不提交、不推送' 'recomputed optional-action queue' 'Include every other still-applicable action too' '确认展示本次知识库变更并创建本地提交，不推送' 'separate explicit authorization'; do
+    for marker in 'references/content-routing.md' 'kb-target-check.py' '知识库根目录' 'Templates/' 'complete frontmatter' 'confidence: unverified' '记录类型' '目标位置' '记录重点' 'explicitly requested linked case transcript' 'existing Git working-tree changes' 'numbered required-confirmation block' '确认按上述预览写入知识库，不提交、不推送' 'recomputed optional-action queue' 'Include every other still-applicable action too' '确认展示本次知识库变更并创建本地提交，不推送' 'separate explicit authorization'; do
       grep -Fq "$marker" "$root/integrations/$agent_name/work-knowledge/references/ingest.md" || { echo "$agent_name 写入规则缺少收尾契约：$marker" >&2; exit 1; }
     done
     for marker in '确认按上述预览归档指定笔记，不提交、不推送' '确认删除上述指定文件，不提交、不推送' '确认按上述预览合并指定笔记，不提交、不推送' '确认按上述预览移动指定文件，不提交、不推送'; do
@@ -104,6 +104,13 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "temp
   done
 fi
 echo "知识库框架检查通过：$root"
+assert_skill_marker() {
+  local agent_name="$1" marker_path="$2" expected_line
+  while IFS= read -r expected_line; do
+    grep -Fqx "$expected_line" "$marker_path" || { echo "$agent_name Skill marker 版本或规则哈希不一致：$expected_line" >&2; exit 1; }
+  done < <(python "$root/scripts/kb-skill-info.py" --root "$root" --agent "$agent_name")
+  grep -Fq 'installed_at=' "$marker_path" || { echo "$agent_name Skill marker 缺少 installed_at" >&2; exit 1; }
+}
 if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "personal" ]]; then
  command -v cygpath >/dev/null 2>&1 && expected="$(cygpath -w "$root")" || expected="$root"
  if [[ "$agent" == "codex" || "$agent" == "all" ]]; then
@@ -113,6 +120,7 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "pers
   marker="$home/skills/work-knowledge/.managed-by-work-knowledge-template"
   [[ -f "$skill" && -f "$marker" ]] || { echo "缺少 Codex skill；请执行 ./scripts/install-codex-skill.sh" >&2; exit 1; }
   grep -Fq "knowledge_base=$expected" "$marker" || { echo "Codex skill 路径不匹配；请重新安装" >&2; exit 1; }
+  assert_skill_marker codex "$marker"
   echo "Codex 全局知识库 skill 检查通过：$skill"
  fi
  if [[ "$agent" == "bluecode" || "$agent" == "all" ]]; then
@@ -123,7 +131,8 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "pers
   if [[ -e "$bdir" ]]; then
     [[ -f "$bdir/SKILL.md" && -f "$bmarker" ]] || { echo "存在非模板管理的 BlueCode skill：$bdir" >&2; exit 1; }
     grep -Fq "knowledge_base=$expected" "$bmarker" || { echo "BlueCode skill 路径不匹配；请重新安装" >&2; exit 1; }
-    for relative in SKILL.md references/layout.md references/interaction.md references/content-routing.md references/ingest.md references/query.md references/project.md references/maintenance.md references/update.md references/migration.md; do cmp -s "$root/integrations/bluecode/work-knowledge/$relative" "$bdir/$relative" || { echo "BlueCode skill 与仓库版本不一致：$relative" >&2; exit 1; }; done
+    assert_skill_marker bluecode "$bmarker"
+    for relative in SKILL.md .skill-version references/layout.md references/interaction.md references/content-routing.md references/ingest.md references/query.md references/project.md references/maintenance.md references/update.md references/migration.md; do cmp -s "$root/integrations/bluecode/work-knowledge/$relative" "$bdir/$relative" || { echo "BlueCode skill 与仓库版本不一致：$relative" >&2; exit 1; }; done
     echo "BlueCode 全局知识库 skill 检查通过：$bdir/SKILL.md"
   else
     echo "缺少 BlueCode skill；请执行 ./scripts/install-bluecode-skill.sh" >&2; exit 1
@@ -137,7 +146,8 @@ if [[ -f "$root/.kb-role" ]] && [[ "$(tr -d '\r\n' < "$root/.kb-role")" == "pers
   if [[ -e "$vdir" ]]; then
     [[ -f "$vdir/SKILL.md" && -f "$vmarker" ]] || { echo "存在非模板管理的 vBuddy skill：$vdir" >&2; exit 1; }
     grep -Fq "knowledge_base=$expected" "$vmarker" || { echo "vBuddy skill 路径不匹配；请重新安装" >&2; exit 1; }
-    for relative in SKILL.md references/layout.md references/interaction.md references/content-routing.md references/ingest.md references/query.md references/project.md references/maintenance.md references/update.md references/migration.md; do cmp -s "$root/integrations/vbuddy/work-knowledge/$relative" "$vdir/$relative" || { echo "vBuddy skill 与仓库版本不一致：$relative" >&2; exit 1; }; done
+    assert_skill_marker vbuddy "$vmarker"
+    for relative in SKILL.md .skill-version references/layout.md references/interaction.md references/content-routing.md references/ingest.md references/query.md references/project.md references/maintenance.md references/update.md references/migration.md; do cmp -s "$root/integrations/vbuddy/work-knowledge/$relative" "$vdir/$relative" || { echo "vBuddy skill 与仓库版本不一致：$relative" >&2; exit 1; }; done
     echo "vBuddy 全局知识库 skill 检查通过：$vdir/SKILL.md"
   else
     echo "缺少 vBuddy skill；请执行 ./scripts/install-vbuddy-skill.sh" >&2; exit 1

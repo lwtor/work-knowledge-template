@@ -2,6 +2,14 @@
 
 Use this rule for every save, summarize, organize, or update request. Resolve the active layout first, then choose the semantic area before choosing a filename or template.
 
+## Destination gate
+
+- If the user explicitly says “知识库”, “我的知识库”, “写入知识库”, “记录到知识库”, or “存到知识库”, the destination is the personal knowledge base resolved from the installed Skill marker. Do not reinterpret that destination from the current working directory.
+- The current source repository and its `doc/`, `docs/`, `notes/`, or similar directories are never substitutes for the marker's `knowledge_base`. Use them only when the user explicitly asks for current-project documentation instead of the knowledge base.
+- Resolve and verify the knowledge-base root before classifying content. If the marker is missing, the root is inaccessible, or it is not a personal knowledge base, stop and report the problem. Never guess a path or save nearby.
+- Validate every proposed target with `scripts/kb-target-check.py` before preview and again immediately before writing.
+- The resolved project root always means the project area inside the personal knowledge base. It never means the current source-code project directory.
+
 ## Routing decision
 
 - Reusable technical facts, concepts, mechanisms, commands, and practices belong in the resolved knowledge root. Examples: KSP mechanisms, coroutine behavior, Lifecycle APIs, Git operations, and Gerrit concepts.
@@ -31,6 +39,8 @@ The same conversation may justify more than one artifact, such as reusable techn
 
 - “整理 KSP 的工作机制，方便复习” -> knowledge.
 - “记录这个项目需求的交付和测试安排” -> project.
+- “把小V业务逻辑整理到知识库” -> the 小V directory inside the knowledge-base project area, never the source repository's `doc/`.
+- “把内容写到当前小V项目的 doc 目录” -> current-project documentation, not this knowledge-base workflow.
 - “记录这次怎么引导 AI 找到答案，作为 AI 使用案例” -> case, without an extra classification question.
 - “保留这次完整问答，再总结引导方法” -> one case directory containing analysis plus raw transcript.
 - “先放着，之后再整理” -> inbox.

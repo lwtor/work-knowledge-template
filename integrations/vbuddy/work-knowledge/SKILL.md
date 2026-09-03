@@ -1,7 +1,7 @@
 ---
 name: work-knowledge
-version: 0.7.7
-description: Use this vBuddy skill to record, summarize, organize, retrieve, search, or update the user's existing personal work knowledge base (个人工作知识库). Triggers include '知识库', 'work knowledge', 'work-knowledge', '记录到知识库', '存到知识库', '查知识库', '知识库里有什么', '知识库状态', '整理知识', '归档笔记', '知识巡检', '重建索引', and any request to save reusable knowledge or project context into the knowledge base. Do NOT use for bootstrap, create, initialize, install, clone, or connect requests; those follow BOOTSTRAP.md and the current request.
+version: 1.0.0
+description: Use this vBuddy skill to record, summarize, organize, retrieve, search, or update the user's existing personal work knowledge base (个人工作知识库). Triggers include '知识库', '写入知识库', 'work knowledge', 'work-knowledge', '记录到知识库', '存到知识库', '查知识库', '知识库里有什么', '知识库状态', '整理知识', '归档笔记', '知识巡检', '重建索引', and any request to save reusable knowledge or project context into the knowledge base. Do NOT use for bootstrap, create, initialize, install, clone, or connect requests; those follow BOOTSTRAP.md and the current request.
 description_zh: 操作用户已有的个人工作知识库：记录、提炼、整理、检索、更新知识笔记与项目资料。触发词：'知识库'、'记录到知识库'、'存到知识库'、'查知识库'、'知识库里有什么'、'知识库状态'、'整理知识'、'归档'、'巡检'、'重建索引'等。不适用于知识库的创建、初始化、克隆或接入请求，那些走 BOOTSTRAP.md 协议。
 ---
 
@@ -16,6 +16,8 @@ vBuddy loads this skill once per conversation. After installing or updating it, 
 - When installed globally, read `.managed-by-work-knowledge-template` beside this file and use its `knowledge_base` value as the canonical root. This skill folder typically lives at `~/.vbuddy/skills/work-knowledge/`.
 - When read from this repository before installation, the knowledge-base root is three directories above this skill folder.
 - For bootstrap, creation, initialization, installation, clone, or connection requests, ignore any stored path and follow `BOOTSTRAP.md`. Ask once if the current request does not provide a real parent directory.
+
+For an explicit knowledge-base request, the marker root is mandatory and the current workspace must not replace it. Compare this installed `.skill-version` with the vbuddy integration under the resolved personal root. If they differ, report that the installed Skill is stale and offer its repository installer; open a new vBuddy conversation after installation.
 
 Before operating, read `AGENTS.md`, `AI/启动配置.md`, `AI/AI-GUIDE.md`, and `AI/LOCAL.md` from the resolved root.
 
